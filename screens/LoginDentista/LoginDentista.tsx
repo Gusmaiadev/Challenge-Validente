@@ -19,17 +19,12 @@ const LoginDentista: React.FC = () => {
   const [senha, setSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Função handleLogin com logs de depuração
+  // Função handleLogin com logs detalhados
   const handleLogin = async () => {
     console.log('Iniciando o processo de login...');
 
-    if (!validarCampos()) {
-      console.log('Validação de campos falhou.');
-      return;
-    }
-
     setIsLoading(true);
-    console.log('Campos validados. Chamando a API para realizar o login...');
+    console.log('Chamando a API para realizar o login...');
 
     try {
       const response = await realizarLogin(email, senha);
@@ -54,12 +49,15 @@ const LoginDentista: React.FC = () => {
         typeof error === 'object' &&
         'response' in error &&
         error.response &&
-        typeof error.response === 'object' &&
-        'data' in error.response
+        typeof error.response === 'object'
       ) {
-        const data = error.response.data as { message?: string };
-        errorMessage = data.message || errorMessage;
-        console.log('Mensagem de erro extraída da resposta da API:', errorMessage);
+        console.log('Resposta completa do erro da API:', error.response);
+
+        if ('data' in error.response && typeof error.response.data === 'object' && error.response.data !== null) {
+          const data = error.response.data as { message?: string };
+          errorMessage = data.message || errorMessage;
+          console.log('Mensagem de erro extraída da resposta da API:', errorMessage);
+        }
       }
 
       showAlert('Erro no login', errorMessage);
@@ -67,24 +65,6 @@ const LoginDentista: React.FC = () => {
       setIsLoading(false);
       console.log('Processo de login finalizado.');
     }
-  };
-
-  const validarCampos = (): boolean => {
-    if (!email.trim() || !senha.trim()) {
-      console.log('Erro: Campos de email ou senha estão vazios.');
-      showAlert('Erro', 'Preencha todos os campos');
-      return false;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      console.log('Erro: Email inválido.');
-      showAlert('Erro', 'Email inválido');
-      return false;
-    }
-
-    console.log('Campos validados com sucesso.');
-    return true;
   };
 
   const saveUserData = async (token: string) => {

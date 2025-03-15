@@ -2,7 +2,7 @@ import apiClient from './apiClient';
 
 interface LoginRequest {
   email: string;
-  senha: string;
+  password: string; 
 }
 
 interface LoginResponse {
@@ -11,7 +11,10 @@ interface LoginResponse {
 
 export const realizarLogin = async (email: string, senha: string): Promise<LoginResponse> => {
   try {
-    const response = await apiClient.post<LoginResponse>('/auth/login', { email, senha });
+    const response = await apiClient.post<LoginResponse>('/auth/login', { 
+      email, 
+      password: senha 
+    });
     return response.data;
   } catch (error) {
     throw error; 
