@@ -43,13 +43,47 @@ interface CadastroDentistaRequest {
 // Função para realizar login
 export const realizarLogin = async (email: string, senha: string): Promise<LoginResponse> => {
   try {
-    const response = await apiClient.post<LoginResponse>('/auth/login', {
-      email,
-      password: senha,
-    });
-    return response.data;
-  } catch (error) {
-    throw error;
+    const response = await apiClient.post<LoginResponse>('/auth/login', { email, password: senha });
+
+    // Verifica se a resposta foi bem-sucedida
+    if (response.status === 200 && response.data) {
+      return response.data;
+    } else {
+      throw { message: `Erro inesperado: ${response.status}`, status: response.status };
+    }
+  } catch (error: any) {
+    // Tratamento de erros baseado no código HTTP
+    if (error.response) {
+      const statusCode = error.response.status;
+
+      let errorMessage = '';
+      switch (statusCode) {
+        case 400:
+          errorMessage = 'Dados inválidos';
+          break;
+        case 401:
+        case 404: // Trata o erro 404 como "Email ou senha incorretos"
+          errorMessage = 'Email ou senha incorretos';
+          break;
+        case 403:
+          errorMessage = 'Acesso não autorizado';
+          break;
+        case 500:
+          errorMessage = 'Erro interno do servidor';
+          break;
+        default:
+          errorMessage = `Erro no login: ${statusCode}`;
+      }
+
+      // Lança um erro personalizado com o código HTTP
+      throw { message: errorMessage, status: statusCode };
+    } else if (error.request) {
+      // Ocorreu um erro de conexão (ex.: servidor offline)
+      throw { message: 'Erro de conexão: Não foi possível conectar ao servidor' };
+    } else {
+      // Outro tipo de erro
+      throw { message: `Erro desconhecido: ${error.message}` };
+    }
   }
 };
 
@@ -57,27 +91,123 @@ export const realizarLogin = async (email: string, senha: string): Promise<Login
 export const buscarClinicas = async (): Promise<ClinicResponse[]> => {
   try {
     const response = await apiClient.get<ClinicResponse[]>('/clinics');
-    return response.data;
-  } catch (error) {
-    throw error;
+
+    // Verifica se a resposta foi bem-sucedida
+    if (response.status === 200 && response.data) {
+      return response.data;
+    } else {
+      throw { message: `Erro inesperado: ${response.status}`, status: response.status };
+    }
+  } catch (error: any) {
+    // Tratamento de erros baseado no código HTTP
+    if (error.response) {
+      const statusCode = error.response.status;
+
+      let errorMessage = '';
+      switch (statusCode) {
+        case 400:
+          errorMessage = 'Requisição inválida';
+          break;
+        case 403:
+          errorMessage = 'Acesso não autorizado';
+          break;
+        case 500:
+          errorMessage = 'Erro interno do servidor';
+          break;
+        default:
+          errorMessage = `Erro ao buscar clínicas: ${statusCode}`;
+      }
+
+      // Lança um erro personalizado com o código HTTP
+      throw { message: errorMessage, status: statusCode };
+    } else if (error.request) {
+      // Ocorreu um erro de conexão (ex.: servidor offline)
+      throw { message: 'Erro de conexão: Não foi possível conectar ao servidor' };
+    } else {
+      // Outro tipo de erro
+      throw { message: `Erro desconhecido: ${error.message}` };
+    }
   }
 };
 
 // Função para cadastrar atendentes
 export const cadastrarAtendente = async (dados: CadastroAtendenteRequest): Promise<void> => {
   try {
-    await apiClient.post('/auth/signup', dados);
-    console.log(dados)
-  } catch (error) {
-    throw error;
+    const response = await apiClient.post('/auth/signup', dados);
+
+    // Verifica se a resposta foi bem-sucedida
+    if (response.status !== 201) {
+      throw { message: `Erro inesperado: ${response.status}`, status: response.status };
+    }
+  } catch (error: any) {
+    // Tratamento de erros baseado no código HTTP
+    if (error.response) {
+      const statusCode = error.response.status;
+
+      let errorMessage = '';
+      switch (statusCode) {
+        case 400:
+          errorMessage = 'Dados inválidos';
+          break;
+        case 403:
+          errorMessage = 'Acesso não autorizado';
+          break;
+        case 500:
+          errorMessage = 'Erro interno do servidor';
+          break;
+        default:
+          errorMessage = `Erro ao cadastrar atendente: ${statusCode}`;
+      }
+
+      // Lança um erro personalizado com o código HTTP
+      throw { message: errorMessage, status: statusCode };
+    } else if (error.request) {
+      // Ocorreu um erro de conexão (ex.: servidor offline)
+      throw { message: 'Erro de conexão: Não foi possível conectar ao servidor' };
+    } else {
+      // Outro tipo de erro
+      throw { message: `Erro desconhecido: ${error.message}` };
+    }
   }
 };
 
 // Função para cadastrar dentistas
 export const cadastrarDentista = async (dados: CadastroDentistaRequest): Promise<void> => {
   try {
-    await apiClient.post('/auth/signup', dados);
-  } catch (error) {
-    throw error;
+    const response = await apiClient.post('/auth/signup', dados);
+
+    // Verifica se a resposta foi bem-sucedida
+    if (response.status !== 201) {
+      throw { message: `Erro inesperado: ${response.status}`, status: response.status };
+    }
+  } catch (error: any) {
+    // Tratamento de erros baseado no código HTTP
+    if (error.response) {
+      const statusCode = error.response.status;
+
+      let errorMessage = '';
+      switch (statusCode) {
+        case 400:
+          errorMessage = 'Dados inválidos';
+          break;
+        case 403:
+          errorMessage = 'Acesso não autorizado';
+          break;
+        case 500:
+          errorMessage = 'Erro interno do servidor';
+          break;
+        default:
+          errorMessage = `Erro ao cadastrar dentista: ${statusCode}`;
+      }
+
+      // Lança um erro personalizado com o código HTTP
+      throw { message: errorMessage, status: statusCode };
+    } else if (error.request) {
+      // Ocorreu um erro de conexão (ex.: servidor offline)
+      throw { message: 'Erro de conexão: Não foi possível conectar ao servidor' };
+    } else {
+      // Outro tipo de erro
+      throw { message: `Erro desconhecido: ${error.message}` };
+    }
   }
 };

@@ -19,66 +19,66 @@ const LoginDentista: React.FC = () => {
   const [senha, setSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Função handleLogin com logs detalhados
+  // Função para validar os campos de login
+  const validarCampos = (): boolean => {
+    if (!email.trim() || !senha.trim()) {
+      showAlert('Erro', 'Preencha todos os campos');
+      return false;
+    }
+    if (!isValidEmail(email)) {
+      showAlert('Erro', 'Email inválido');
+      return false;
+    }
+    return true;
+  };
+
+  // Função para verificar se o email é válido
+  const isValidEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  // Função para lidar com o login
   const handleLogin = async () => {
-    console.log('Iniciando o processo de login...');
+    if (!validarCampos()) return;
 
     setIsLoading(true);
-    console.log('Chamando a API para realizar o login...');
-
     try {
       const response = await realizarLogin(email, senha);
-      console.log('Resposta da API recebida:', response);
-
       const { token } = response;
 
       // Salvar token e tipo de usuário no AsyncStorage
       await saveUserData(token);
-      console.log('Token salvo no AsyncStorage.');
 
       // Navegar para a tela MenuPrincipal
-      console.log('Navegando para a tela MenuPrincipal...');
       navigation.navigate('MenuPrincipal' as never);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Erro ao fazer login:', error);
 
+      // Captura a mensagem lançada no endpoints.ts
       let errorMessage = 'Erro desconhecido';
-
-      if (
-        error &&
-        typeof error === 'object' &&
-        'response' in error &&
-        error.response &&
-        typeof error.response === 'object'
-      ) {
-        console.log('Resposta completa do erro da API:', error.response);
-
-        if ('data' in error.response && typeof error.response.data === 'object' && error.response.data !== null) {
-          const data = error.response.data as { message?: string };
-          errorMessage = data.message || errorMessage;
-          console.log('Mensagem de erro extraída da resposta da API:', errorMessage);
-        }
+      if (error?.message) {
+        errorMessage = error.message; // Exibe a mensagem do erro personalizado
       }
 
       showAlert('Erro no login', errorMessage);
     } finally {
       setIsLoading(false);
-      console.log('Processo de login finalizado.');
     }
   };
 
+  // Função para salvar dados do usuário no AsyncStorage
   const saveUserData = async (token: string) => {
     try {
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('tipoUsuario', 'dentista');
-      console.log('Dados do usuário salvos no AsyncStorage.');
     } catch (error) {
       console.error('Erro ao salvar dados no AsyncStorage:', error);
     }
   };
 
+  // Função para exibir alertas
   const showAlert = (title: string, message: string) => {
-    console.log(`Exibindo alerta: ${title} - ${message}`);
     Alert.alert(title, message, [{ text: 'OK' }]);
   };
 
