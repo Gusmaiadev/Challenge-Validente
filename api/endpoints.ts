@@ -49,40 +49,32 @@ export const realizarLogin = async (email: string, senha: string): Promise<Login
     if (response.status === 200 && response.data) {
       return response.data;
     } else {
-      throw { message: `Erro inesperado: ${response.status}`, status: response.status };
+      throw new Error(`Erro inesperado: ${response.status}`);
     }
   } catch (error: any) {
     // Tratamento de erros baseado no código HTTP
     if (error.response) {
       const statusCode = error.response.status;
 
-      let errorMessage = '';
       switch (statusCode) {
         case 400:
-          errorMessage = 'Dados inválidos';
-          break;
+          throw new Error('Dados inválidos');
         case 401:
         case 404: // Trata o erro 404 como "Email ou senha incorretos"
-          errorMessage = 'Email ou senha incorretos';
-          break;
+          throw new Error('Email ou senha incorretos');
         case 403:
-          errorMessage = 'Acesso não autorizado';
-          break;
+          throw new Error('Acesso não autorizado');
         case 500:
-          errorMessage = 'Erro interno do servidor';
-          break;
+          throw new Error('Erro interno do servidor');
         default:
-          errorMessage = `Erro no login: ${statusCode}`;
+          throw new Error(`Erro no login: ${statusCode}`);
       }
-
-      // Lança um erro personalizado com o código HTTP
-      throw { message: errorMessage, status: statusCode };
     } else if (error.request) {
       // Ocorreu um erro de conexão (ex.: servidor offline)
-      throw { message: 'Erro de conexão: Não foi possível conectar ao servidor' };
+      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
     } else {
       // Outro tipo de erro
-      throw { message: `Erro desconhecido: ${error.message}` };
+      throw new Error(`Erro desconhecido: ${error.message}`);
     }
   }
 };
@@ -96,36 +88,29 @@ export const buscarClinicas = async (): Promise<ClinicResponse[]> => {
     if (response.status === 200 && response.data) {
       return response.data;
     } else {
-      throw { message: `Erro inesperado: ${response.status}`, status: response.status };
+      throw new Error(`Erro inesperado: ${response.status}`);
     }
   } catch (error: any) {
     // Tratamento de erros baseado no código HTTP
     if (error.response) {
       const statusCode = error.response.status;
 
-      let errorMessage = '';
       switch (statusCode) {
         case 400:
-          errorMessage = 'Requisição inválida';
-          break;
+          throw new Error('Requisição inválida');
         case 403:
-          errorMessage = 'Acesso não autorizado';
-          break;
+          throw new Error('Acesso não autorizado');
         case 500:
-          errorMessage = 'Erro interno do servidor';
-          break;
+          throw new Error('Erro interno do servidor');
         default:
-          errorMessage = `Erro ao buscar clínicas: ${statusCode}`;
+          throw new Error(`Erro ao buscar clínicas: ${statusCode}`);
       }
-
-      // Lança um erro personalizado com o código HTTP
-      throw { message: errorMessage, status: statusCode };
     } else if (error.request) {
       // Ocorreu um erro de conexão (ex.: servidor offline)
-      throw { message: 'Erro de conexão: Não foi possível conectar ao servidor' };
+      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
     } else {
       // Outro tipo de erro
-      throw { message: `Erro desconhecido: ${error.message}` };
+      throw new Error(`Erro desconhecido: ${error.message}`);
     }
   }
 };
@@ -137,36 +122,29 @@ export const cadastrarAtendente = async (dados: CadastroAtendenteRequest): Promi
 
     // Verifica se a resposta foi bem-sucedida
     if (response.status !== 201) {
-      throw { message: `Erro inesperado: ${response.status}`, status: response.status };
+      throw new Error(`Erro inesperado: ${response.status}`);
     }
   } catch (error: any) {
     // Tratamento de erros baseado no código HTTP
     if (error.response) {
       const statusCode = error.response.status;
 
-      let errorMessage = '';
       switch (statusCode) {
         case 400:
-          errorMessage = 'Dados inválidos';
-          break;
+          throw new Error('Dados inválidos');
         case 403:
-          errorMessage = 'Acesso não autorizado';
-          break;
+          throw new Error('Acesso não autorizado');
         case 500:
-          errorMessage = 'Erro interno do servidor';
-          break;
+          throw new Error('Erro interno do servidor');
         default:
-          errorMessage = `Erro ao cadastrar atendente: ${statusCode}`;
+          throw new Error(`Erro ao cadastrar atendente: ${statusCode}`);
       }
-
-      // Lança um erro personalizado com o código HTTP
-      throw { message: errorMessage, status: statusCode };
     } else if (error.request) {
       // Ocorreu um erro de conexão (ex.: servidor offline)
-      throw { message: 'Erro de conexão: Não foi possível conectar ao servidor' };
+      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
     } else {
       // Outro tipo de erro
-      throw { message: `Erro desconhecido: ${error.message}` };
+      throw new Error(`Erro desconhecido: ${error.message}`);
     }
   }
 };
@@ -178,36 +156,65 @@ export const cadastrarDentista = async (dados: CadastroDentistaRequest): Promise
 
     // Verifica se a resposta foi bem-sucedida
     if (response.status !== 201) {
-      throw { message: `Erro inesperado: ${response.status}`, status: response.status };
+      throw new Error(`Erro inesperado: ${response.status}`);
     }
   } catch (error: any) {
     // Tratamento de erros baseado no código HTTP
     if (error.response) {
       const statusCode = error.response.status;
 
-      let errorMessage = '';
       switch (statusCode) {
         case 400:
-          errorMessage = 'Dados inválidos';
-          break;
+          throw new Error('Dados inválidos');
         case 403:
-          errorMessage = 'Acesso não autorizado';
-          break;
+          throw new Error('Acesso não autorizado');
         case 500:
-          errorMessage = 'Erro interno do servidor';
-          break;
+          throw new Error('Erro interno do servidor');
         default:
-          errorMessage = `Erro ao cadastrar dentista: ${statusCode}`;
+          throw new Error(`Erro ao cadastrar dentista: ${statusCode}`);
       }
-
-      // Lança um erro personalizado com o código HTTP
-      throw { message: errorMessage, status: statusCode };
     } else if (error.request) {
       // Ocorreu um erro de conexão (ex.: servidor offline)
-      throw { message: 'Erro de conexão: Não foi possível conectar ao servidor' };
+      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
     } else {
       // Outro tipo de erro
-      throw { message: `Erro desconhecido: ${error.message}` };
+      throw new Error(`Erro desconhecido: ${error.message}`);
+    }
+  }
+};
+
+// Função para buscar consultas
+export const fetchAppointments = async (): Promise<any[]> => {
+  try {
+    const response = await apiClient.get('/appointments');
+
+    // Verifica se a resposta foi bem-sucedida
+    if (response.status === 200 && response.data) {
+      return response.data;
+    } else {
+      throw new Error(`Erro inesperado: ${response.status}`);
+    }
+  } catch (error: any) {
+    // Tratamento de erros baseado no código HTTP
+    if (error.response) {
+      const statusCode = error.response.status;
+
+      switch (statusCode) {
+        case 400:
+          throw new Error('Requisição inválida');
+        case 403:
+          throw new Error('Acesso não autorizado');
+        case 500:
+          throw new Error('Erro interno do servidor');
+        default:
+          throw new Error(`Erro ao carregar consultas: ${statusCode}`);
+      }
+    } else if (error.request) {
+      // Ocorreu um erro de conexão (ex.: servidor offline)
+      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
+    } else {
+      // Outro tipo de erro
+      throw new Error(`Erro desconhecido: ${error.message}`);
     }
   }
 };

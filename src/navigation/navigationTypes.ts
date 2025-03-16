@@ -12,14 +12,29 @@ export type RootStackParamList = {
   CadastroAtendente: undefined; // Rota sem parâmetros
   CadastroDentista: undefined; // Rota sem parâmetros
   AlterarSenha: { origem: string }; // Rota com parâmetro obrigatório
-  Configuracoes: { tipoUsuario?: string }
+  Configuracoes: { tipoUsuario?: string }; // Rota "Configuracoes" com parâmetro opcional
+  Consultas: { tipoUsuario?: string }; // Rota "Consultas" com parâmetro opcional
+  ConsultaPaciente: {
+    appointmentId: number;
+    patientName: string;
+    appointmentDate: string;
+    appointmentTime: string;
+    procedureType: string;
+    clinic: string;
+    tipoUsuario: string;
+  }; // Rota "ConsultaPaciente" com parâmetros obrigatórios
 };
 
+// Tipagem da navegação e dos parâmetros da rota
+export type ConsultaPacienteRouteProp = RouteProp<RootStackParamList, 'ConsultaPaciente'>;
+export type ConsultaPacienteNavigationProp = StackNavigationProp<RootStackParamList, 'ConsultaPaciente'>;
+
+export type ConsultasRouteProp = RouteProp<RootStackParamList, 'Consultas'>;
+export type ConsultasNavigationProp = StackNavigationProp<RootStackParamList, 'Consultas'>;
 
 export type ConfiguracoesRouteProp = RouteProp<RootStackParamList, 'Configuracoes'>;
 export type ConfiguracoesNavigationProp = StackNavigationProp<RootStackParamList, 'Configuracoes'>;
 
-// Tipagem da navegação e dos parâmetros da rota
 export type LoginDentistaRouteProp = RouteProp<RootStackParamList, 'LoginDentista'>;
 export type LoginDentistaNavigationProp = StackNavigationProp<RootStackParamList, 'LoginDentista'>;
 
@@ -51,4 +66,14 @@ export type MenuPrincipalProps = {
 export type ConfiguracoesProps = {
   route: ConfiguracoesRouteProp;
   navigation: ConfiguracoesNavigationProp;
+};
+
+export type ConsultasProps = {
+  route: ConsultasRouteProp;
+  navigation: ConsultasNavigationProp;
+};
+
+export type ConsultaPacienteProps = {
+  route: ConsultaPacienteRouteProp;
+  navigation: ConsultaPacienteNavigationProp;
 };
