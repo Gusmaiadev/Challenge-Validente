@@ -12,9 +12,10 @@ import { realizarLogin } from '../../api/endpoints';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import styles from './LoginDentista.styles';
+import { LoginDentistaNavigationProp } from '../../src/navigation/navigationTypes';
 
 const LoginDentista: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<LoginDentistaNavigationProp>();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -51,14 +52,16 @@ const LoginDentista: React.FC = () => {
       await saveUserData(token);
 
       // Navegar para a tela MenuPrincipal
-      navigation.navigate('MenuPrincipal' as never);
+      navigation.navigate('MenuPrincipal', { tipoUsuario: 'dentista' });
     } catch (error: any) {
       console.error('Erro ao fazer login:', error);
 
-      // Captura a mensagem lançada no endpoints.ts
+      // Tratamento de erros específicos
       let errorMessage = 'Erro desconhecido';
-      if (error?.message) {
-        errorMessage = error.message; // Exibe a mensagem do erro personalizado
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message; // Exibe a mensagem do erro personalizado
+      } else if (error?.message) {
+        errorMessage = error.message; // Fallback para mensagens genéricas
       }
 
       showAlert('Erro no login', errorMessage);
@@ -136,10 +139,10 @@ const LoginDentista: React.FC = () => {
       </View>
 
       {/* Links */}
-      <TouchableOpacity onPress={() => navigation.navigate('CadastroDentista' as never)}>
+      <TouchableOpacity onPress={() => navigation.navigate('CadastroDentista')}>
         <Text style={styles.linkText}>Não possui cadastro? Cadastrar</Text>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('AlterarSenha' as never)}>
+      <TouchableOpacity onPress={() => navigation.navigate('AlterarSenha', { origem: 'dentista' })}>
         <Text style={styles.linkText}>Esqueci minha senha</Text>
       </TouchableOpacity>
     </View>

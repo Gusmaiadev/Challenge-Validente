@@ -12,36 +12,16 @@ import { realizarLogin } from '../../api/endpoints';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import styles from './LoginAtendente.styles';
+import { LoginAtendenteNavigationProp } from '../../src/navigation/navigationTypes';
 
 const LoginAtendente: React.FC = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<LoginAtendenteNavigationProp>();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Função para validar os campos de login
-  const validarCampos = (): boolean => {
-    if (!email.trim() || !senha.trim()) {
-      showAlert('Erro', 'Preencha todos os campos');
-      return false;
-    }
-    if (!isValidEmail(email)) {
-      showAlert('Erro', 'Email inválido');
-      return false;
-    }
-    return true;
-  };
-
-  // Função para verificar se o email é válido
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
   // Função para lidar com o login
   const handleLogin = async () => {
-    if (!validarCampos()) return;
-
     setIsLoading(true);
     try {
       const response = await realizarLogin(email, senha);
@@ -51,14 +31,16 @@ const LoginAtendente: React.FC = () => {
       await saveUserData(token);
 
       // Navegar para a tela MenuPrincipal
-      navigation.navigate('MenuPrincipal' as never);
+      navigation.navigate('MenuPrincipal', { tipoUsuario: 'atendente' });
     } catch (error: any) {
       console.error('Erro ao fazer login:', error);
 
       // Captura a mensagem lançada no endpoints.ts
       let errorMessage = 'Erro desconhecido';
-      if (error?.message) {
-        errorMessage = error.message; // Exibe a mensagem do erro personalizado
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message; // Exibe a mensagem do erro personalizado
+      } else if (error?.message) {
+        errorMessage = error.message; // Fallback para mensagens genéricas
       }
 
       showAlert('Erro no login', errorMessage);
