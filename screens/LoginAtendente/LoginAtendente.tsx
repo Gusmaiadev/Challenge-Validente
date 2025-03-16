@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,8 @@ import {
   ActivityIndicator,
   Alert,
   Image,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { realizarLogin } from '../../api/endpoints';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,10 +20,10 @@ const LoginAtendente: React.FC = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const senhaRef = useRef<TextInput | null>(null);
 
   const handleLogin = async () => {
     console.log('Iniciando o processo de login...');
-
     setIsLoading(true);
     console.log('Chamando a API para realizar o login...');
 
@@ -82,67 +84,77 @@ const LoginAtendente: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
-      {/* ProgressBar */}
-      {isLoading && (
-        <View style={styles.progressBar}>
-          <ActivityIndicator size="large" color="#FFFFFF" />
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'} // Comportamento específico para iOS e Android
+      enabled>
+      <View style={styles.container}>
+        {/* ProgressBar */}
+        {isLoading && (
+          <View style={styles.progressBar}>
+            <ActivityIndicator size="large" color="#FFFFFF" />
+          </View>
+        )}
+
+        {/* Imagem superior */}
+        <Image
+          source={require('../../assets/icone.png')} // Substitua pelo caminho correto do ícone
+          style={styles.topImage}
+        />
+
+        {/* Ícone Atendente */}
+        <Image
+          source={require('../../assets/iconeatendente.png')} // Substitua pelo caminho correto do ícone
+          style={styles.atendenteIcon}
+        />
+
+        {/* Título */}
+        <Text style={styles.title}>Login Atendente</Text>
+
+        {/* Inputs */}
+        <TextInput
+          style={styles.input}
+          placeholder="E-mail"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          returnKeyType="next" // Move o foco para o próximo campo
+          onSubmitEditing={() => senhaRef.current?.focus()} // Move o foco para o campo de senha
+          onFocus={() => console.log('Campo de e-mail recebeu foco')} // Log para depuração
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Senha"
+          value={senha}
+          onChangeText={setSenha}
+          secureTextEntry
+          ref={senhaRef} // Referência para o campo de senha
+          returnKeyType="done" // Define o botão "Concluir" no teclado
+        />
+
+        {/* Botões */}
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => navigation.goBack()}>
+            <Text style={styles.buttonText}>Voltar</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleLogin}>
+            <Text style={styles.buttonText}>Entrar</Text>
+          </TouchableOpacity>
         </View>
-      )}
 
-      {/* Imagem superior */}
-      <Image
-        source={require('../../assets/icone.png')} // Substitua pelo caminho correto do ícone
-        style={styles.topImage}
-      />
-
-      {/* Ícone Atendente */}
-      <Image
-        source={require('../../assets/iconeatendente.png')} // Substitua pelo caminho correto do ícone
-        style={styles.atendenteIcon}
-      />
-
-      {/* Título */}
-      <Text style={styles.title}>Login Atendente</Text>
-
-      {/* Inputs */}
-      <TextInput
-        style={styles.input}
-        placeholder="E-mail"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Senha"
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry
-      />
-
-      {/* Botões */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>Voltar</Text>
+        {/* Links */}
+        <TouchableOpacity onPress={() => navigation.navigate('CadastroAtendente' as never)}>
+          <Text style={styles.linkText}>Não possui cadastro? Cadastrar</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Entrar</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('AlterarSenha' as never)}>
+          <Text style={styles.linkText}>Esqueci minha senha</Text>
         </TouchableOpacity>
       </View>
-
-      {/* Links */}
-      <TouchableOpacity onPress={() => navigation.navigate('CadastroAtendente' as never)}>
-        <Text style={styles.linkText}>Não possui cadastro? Cadastrar</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => navigation.navigate('AlterarSenha' as never)}>
-        <Text style={styles.linkText}>Esqueci minha senha</Text>
-      </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 };
 
-export default LoginAtendente;
+export default LoginAtendente; 

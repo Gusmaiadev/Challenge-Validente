@@ -12,10 +12,11 @@ const apiClient: AxiosInstance = axios.create({
 // Interceptador de requisição para adicionar o token
 apiClient.interceptors.request.use(async (config) => {
   const token = await AsyncStorage.getItem('token');
-  if (token && !config.url?.endsWith('/clinics')) {
+  if (token && !config.url?.endsWith('/auth/login') && !config.url?.endsWith('/clinics')) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
 export default apiClient;
+

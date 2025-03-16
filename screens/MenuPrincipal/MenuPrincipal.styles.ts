@@ -5,10 +5,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0066FF',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start', // Altere de 'center' para 'flex-start'
+    paddingTop: 200, // Adicione um espaçamento no topo
   },
   textOdonto: {
-    fontFamily: 'OpenSans-Bold', // Certifique-se de carregar a fonte Open Sans Bold
+    fontFamily: 'OpenSans-Bold',
     fontSize: 20,
     color: '#FFFFFF',
     textAlign: 'center',
@@ -18,8 +19,8 @@ const styles = StyleSheet.create({
     width: 51,
     height: 52,
     position: 'absolute',
-    top: 20,
-    right: 20,
+    top: 90, // Ajuste para mover o ícone mais para baixo
+    right: 30,
     resizeMode: 'contain',
   },
   buttonContainer: {
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-around',
     width: '100%',
-    marginTop: 20,
+    marginTop: 50, // Aumente o valor para mover os botões mais para baixo
   },
   button: {
     width: 177,

@@ -5,6 +5,8 @@ import MenuLogin from './screens/MenuLogin/MenuLogin';
 import LoginDentista from './screens/LoginDentista/LoginDentista'; // Importa a nova tela
 import LoginAtendente from './screens/LoginAtendente/LoginAtendente';
 import MenuPrincipal from './screens/MenuPrincipal/MenuPrincipal';
+import CadastroAtendente from './screens/CadastroAtendente/CadastroAtendente';
+import CadastroDentista from './screens/CadastroDentista/CadastroDentista';
 
 // Define os parâmetros das rotas
 type RootStackParamList = {
@@ -12,6 +14,8 @@ type RootStackParamList = {
   LoginDentista: undefined;
   LoginAtendente: undefined;
   MenuPrincipal: undefined;
+  CadastroAtendente: undefined;
+  CadastroDentista: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -39,6 +43,16 @@ const App: React.FC = () => {
         <Stack.Screen
           name="MenuPrincipal"
           component={MenuPrincipal}
+          options={{ headerShown: false }} // Desativa o cabeçalho
+        />
+        <Stack.Screen
+          name="CadastroAtendente"
+          component={CadastroAtendente}
+          options={{ headerShown: false }} // Desativa o cabeçalho
+        />
+        <Stack.Screen
+          name="CadastroDentista"
+          component={CadastroDentista}
           options={{ headerShown: false }} // Desativa o cabeçalho
         />
       </Stack.Navigator>
