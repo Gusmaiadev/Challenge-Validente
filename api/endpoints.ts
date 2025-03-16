@@ -67,6 +67,7 @@ export const buscarClinicas = async (): Promise<ClinicResponse[]> => {
 export const cadastrarAtendente = async (dados: CadastroAtendenteRequest): Promise<void> => {
   try {
     await apiClient.post('/auth/signup', dados);
+    console.log(dados)
   } catch (error) {
     throw error;
   }
