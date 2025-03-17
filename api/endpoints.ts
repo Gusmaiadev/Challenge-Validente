@@ -40,40 +40,71 @@ interface CadastroDentistaRequest {
   clinicId: number;
 }
 
+// Interface para a requisição de cadastro de paciente
+interface PatientRequest {
+  name: string;
+  rg: string;
+  birthDate: string; // Formato: yyyy-MM-dd
+  numCard: number;
+}
+
+// Interface para a resposta de busca de paciente
+interface PatientResponse {
+  id: number;
+  name: string;
+  rg: string;
+  birthDate: string; // Formato: yyyy-MM-dd
+  numCard: number;
+}
+
+// Interface para a requisição de agendamento
+interface AppointmentRequest {
+  dateAppointment: string; // Formato: dd/MM/yyyy
+  timeAppointment: string; // Formato: HH:mm
+  dentistId: number;
+  patientId: number;
+  procedureTypeId: number;
+}
+
+// Interface para a resposta de listagem de consultas
+interface AppointmentListResponse {
+  id: number;
+  patient: string;
+  dateAppointment: string; // Formato: dd/MM/yyyy
+  timeAppointment: string; // Formato: HH:mm
+  procedureType: string;
+  clinic: string;
+}
+
 // Função para realizar login
 export const realizarLogin = async (email: string, senha: string): Promise<LoginResponse> => {
   try {
     const response = await apiClient.post<LoginResponse>('/auth/login', { email, password: senha });
-
-    // Verifica se a resposta foi bem-sucedida
     if (response.status === 200 && response.data) {
       return response.data;
     } else {
       throw new Error(`Erro inesperado: ${response.status}`);
     }
   } catch (error: any) {
-    // Tratamento de erros baseado no código HTTP
     if (error.response) {
       const statusCode = error.response.status;
-
       switch (statusCode) {
         case 400:
           throw new Error('Dados inválidos');
         case 401:
-        case 404: // Trata o erro 404 como "Email ou senha incorretos"
           throw new Error('Email ou senha incorretos');
         case 403:
           throw new Error('Acesso não autorizado');
+        case 404:
+          throw new Error('Email ou senha incorretos');
         case 500:
           throw new Error('Erro interno do servidor');
         default:
           throw new Error(`Erro no login: ${statusCode}`);
       }
     } else if (error.request) {
-      // Ocorreu um erro de conexão (ex.: servidor offline)
       throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
     } else {
-      // Outro tipo de erro
       throw new Error(`Erro desconhecido: ${error.message}`);
     }
   }
@@ -83,18 +114,14 @@ export const realizarLogin = async (email: string, senha: string): Promise<Login
 export const buscarClinicas = async (): Promise<ClinicResponse[]> => {
   try {
     const response = await apiClient.get<ClinicResponse[]>('/clinics');
-
-    // Verifica se a resposta foi bem-sucedida
     if (response.status === 200 && response.data) {
       return response.data;
     } else {
       throw new Error(`Erro inesperado: ${response.status}`);
     }
   } catch (error: any) {
-    // Tratamento de erros baseado no código HTTP
     if (error.response) {
       const statusCode = error.response.status;
-
       switch (statusCode) {
         case 400:
           throw new Error('Requisição inválida');
@@ -106,10 +133,8 @@ export const buscarClinicas = async (): Promise<ClinicResponse[]> => {
           throw new Error(`Erro ao buscar clínicas: ${statusCode}`);
       }
     } else if (error.request) {
-      // Ocorreu um erro de conexão (ex.: servidor offline)
       throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
     } else {
-      // Outro tipo de erro
       throw new Error(`Erro desconhecido: ${error.message}`);
     }
   }
@@ -119,16 +144,12 @@ export const buscarClinicas = async (): Promise<ClinicResponse[]> => {
 export const cadastrarAtendente = async (dados: CadastroAtendenteRequest): Promise<void> => {
   try {
     const response = await apiClient.post('/auth/signup', dados);
-
-    // Verifica se a resposta foi bem-sucedida
     if (response.status !== 201) {
       throw new Error(`Erro inesperado: ${response.status}`);
     }
   } catch (error: any) {
-    // Tratamento de erros baseado no código HTTP
     if (error.response) {
       const statusCode = error.response.status;
-
       switch (statusCode) {
         case 400:
           throw new Error('Dados inválidos');
@@ -140,10 +161,8 @@ export const cadastrarAtendente = async (dados: CadastroAtendenteRequest): Promi
           throw new Error(`Erro ao cadastrar atendente: ${statusCode}`);
       }
     } else if (error.request) {
-      // Ocorreu um erro de conexão (ex.: servidor offline)
       throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
     } else {
-      // Outro tipo de erro
       throw new Error(`Erro desconhecido: ${error.message}`);
     }
   }
@@ -153,16 +172,12 @@ export const cadastrarAtendente = async (dados: CadastroAtendenteRequest): Promi
 export const cadastrarDentista = async (dados: CadastroDentistaRequest): Promise<void> => {
   try {
     const response = await apiClient.post('/auth/signup', dados);
-
-    // Verifica se a resposta foi bem-sucedida
     if (response.status !== 201) {
       throw new Error(`Erro inesperado: ${response.status}`);
     }
   } catch (error: any) {
-    // Tratamento de erros baseado no código HTTP
     if (error.response) {
       const statusCode = error.response.status;
-
       switch (statusCode) {
         case 400:
           throw new Error('Dados inválidos');
@@ -174,47 +189,69 @@ export const cadastrarDentista = async (dados: CadastroDentistaRequest): Promise
           throw new Error(`Erro ao cadastrar dentista: ${statusCode}`);
       }
     } else if (error.request) {
-      // Ocorreu um erro de conexão (ex.: servidor offline)
       throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
     } else {
-      // Outro tipo de erro
       throw new Error(`Erro desconhecido: ${error.message}`);
     }
   }
 };
 
+// Função para buscar procedimentos
+export const buscarProcedimentos = async (): Promise<any[]> => {
+  try {
+    const response = await apiClient.get('/proceduresType');
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.message || 'Erro ao buscar procedimentos');
+  }
+};
+
+// Função para buscar dentistas
+export const buscarDentistas = async (): Promise<any[]> => {
+  try {
+    const response = await apiClient.get('/auth?role=DENTISTA');
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.message || 'Erro ao buscar dentistas');
+  }
+};
+
+// Função para buscar paciente por RG
+export const buscarPacientePorRG = async (rg: string): Promise<any> => {
+  try {
+    const response = await apiClient.get(`/patients/${rg}`);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.message || 'Paciente não encontrado');
+  }
+};
+
+// Função para criar um novo paciente
+export const criarPaciente = async (dados: any): Promise<any> => {
+  try {
+    const response = await apiClient.post('/patients', dados);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.message || 'Erro ao criar paciente');
+  }
+};
+
+// Função para agendar uma consulta
+export const agendarConsulta = async (dados: any): Promise<any> => {
+  try {
+    const response = await apiClient.post('/appointments', dados);
+    return response.data;
+  } catch (error: any) {
+    throw new Error(error.message || 'Erro ao agendar consulta');
+  }
+};
+
 // Função para buscar consultas
-export const fetchAppointments = async (): Promise<any[]> => {
+export const fetchAppointments = async (): Promise<AppointmentListResponse[]> => {
   try {
     const response = await apiClient.get('/appointments');
-
-    // Verifica se a resposta foi bem-sucedida
-    if (response.status === 200 && response.data) {
-      return response.data;
-    } else {
-      throw new Error(`Erro inesperado: ${response.status}`);
-    }
+    return response.data;
   } catch (error: any) {
-    // Tratamento de erros baseado no código HTTP
-    if (error.response) {
-      const statusCode = error.response.status;
-
-      switch (statusCode) {
-        case 400:
-          throw new Error('Requisição inválida');
-        case 403:
-          throw new Error('Acesso não autorizado');
-        case 500:
-          throw new Error('Erro interno do servidor');
-        default:
-          throw new Error(`Erro ao carregar consultas: ${statusCode}`);
-      }
-    } else if (error.request) {
-      // Ocorreu um erro de conexão (ex.: servidor offline)
-      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
-    } else {
-      // Outro tipo de erro
-      throw new Error(`Erro desconhecido: ${error.message}`);
-    }
+    throw new Error(error.message || 'Erro ao buscar consultas');
   }
 };

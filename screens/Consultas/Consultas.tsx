@@ -14,6 +14,7 @@ import { fetchAppointments } from '../../api/endpoints';
 import styles from './Consultas.styles';
 import { ConsultasRouteProp, ConsultasNavigationProp } from '../../src/navigation/navigationTypes';
 
+
 // Função para formatar a data no padrão brasileiro (DD/MM/YYYY)
 const formatDateToBR = (isoDate: string): string => {
   const dateParts = isoDate.split('-'); // Divide a data em partes [YYYY, MM, DD]
@@ -62,7 +63,7 @@ const Consultas: React.FC = () => {
 
   // Função para navegar para AgendamentoConsulta
   const handleAddConsulta = () => {
-    navigation.navigate('AgendamentoConsulta' as never);
+    navigation.navigate('AgendamentoConsultas' as never);
   };
 
   // Função para navegar para detalhes da consulta

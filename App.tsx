@@ -11,6 +11,7 @@ import CadastroConcluido from './screens/CadastroConcluido/CadastroConcluido';
 import ComoUsar from './screens/ComoUsar/ComoUsar';
 import Configuracoes from './screens/Configuracoes/Configuracoes';
 import Consultas from './screens/Consultas/Consultas';
+import AgendamentoConsultas from './screens/AgendamentoConsultas/AgendamentoConsultas';
 
 // Define os parâmetros das rotas
 type RootStackParamList = {
@@ -24,6 +25,7 @@ type RootStackParamList = {
   ComoUsar: undefined;
   Configuracoes: undefined;
   Consultas: undefined;
+  AgendamentoConsultas: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -81,6 +83,11 @@ const App: React.FC = () => {
         <Stack.Screen
           name="Consultas"
           component={Consultas}
+          options={{ headerShown: false }} // Desativa o cabeçalho
+        />
+        <Stack.Screen
+          name="AgendamentoConsultas"
+          component={AgendamentoConsultas}
           options={{ headerShown: false }} // Desativa o cabeçalho
         />
       </Stack.Navigator>
