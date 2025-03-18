@@ -1,132 +1,102 @@
 // screens/ConsultaPaciente/ConsultaPaciente.tsx
 import React, { useEffect, useState } from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { buscarConsultaPorID, iniciarConsulta } from '../../api/endpoints';
+import { buscarConsultaPorID } from '../../api/endpoints';
 import styles from './ConsultaPaciente.styles';
 import { ConsultaPacienteNavigationProp, ConsultaPacienteRouteProp } from '../../src/navigation/navigationTypes';
+
+type ConsultaData = {
+  patientName: string;
+  appointmentDate: string;
+  appointmentTime: string;
+  procedureType: string;
+};
 
 const ConsultaPaciente: React.FC = () => {
   const navigation = useNavigation<ConsultaPacienteNavigationProp>();
   const route = useRoute<ConsultaPacienteRouteProp>();
   const [isLoading, setIsLoading] = useState(false);
-  const [consulta, setConsulta] = useState<any>(null);
- 
+  const [consulta, setConsulta] = useState<ConsultaData | null>(null);
 
-  // Extrair os parâmetros da rota
   const { appointmentId, tipoUsuario } = route.params;
-  console.log('Tipo de Usuário:', tipoUsuario);
 
-  // Carregar os dados da consulta ao iniciar
   useEffect(() => {
+    const carregarConsulta = async () => {
+      setIsLoading(true);
+      try {
+        const response = await buscarConsultaPorID(appointmentId);
+        
+        setConsulta({
+          patientName: response.patient || 'Não informado',
+          appointmentDate: response.dateAppointment 
+            ? new Date(response.dateAppointment).toLocaleDateString('pt-BR')
+            : 'Não informado',
+          appointmentTime: response.timeAppointment || 'Não informado',
+          procedureType: response.procedureType || 'Não informado',
+        });
+
+      } catch (error: any) {
+        Alert.alert('Erro', error.message || 'Falha ao carregar consulta');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     carregarConsulta();
-  }, []);
+  }, [appointmentId]);
 
-  const carregarConsulta = async () => {
-    setIsLoading(true);
-    try {
-      console.log('Buscando consulta por ID:', appointmentId);
-      const consultaResponse = await buscarConsultaPorID(appointmentId);
-      console.log('Resposta da API:', consultaResponse);
-
-      // Normalizar os dados recebidos da API
-      const consultaNormalizada = {
-        patientName: consultaResponse.patient || 'Não informado',
-        appointmentDate: consultaResponse.dateAppointment || 'Não informado',
-        appointmentTime: consultaResponse.timeAppointment || 'Não informado',
-        procedureType: consultaResponse.procedureType || 'Não informado',
-        clinic: consultaResponse.clinic || 'Não informado',
-      };
-
-      setConsulta(consultaNormalizada);
-    } catch (error: any) {
-      console.error('Erro ao buscar consulta:', error.message || error);
-      Alert.alert('Erro', error.message || 'Erro ao buscar consulta');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleIniciarAnalise = () => {
+    navigation.navigate('AnaliseConsulta', {
+      appointmentId:appointmentId,
+      tipoUsuario: tipoUsuario
+    });
   };
-
-  const handleIniciarConsulta = async () => {
-    if (!consulta) {
-      Alert.alert('Erro', 'Consulta não encontrada.');
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      console.log('Iniciando consulta...');
-      await iniciarConsulta(appointmentId);
-      console.log('Consulta iniciada com sucesso');
-
-      // Exibir mensagem de sucesso
-      Alert.alert('Sucesso', 'Consulta iniciada com sucesso');
-    } catch (error: any) {
-      console.error('Erro ao iniciar consulta:', error.message || error);
-      Alert.alert('Erro', error.message || 'Erro ao iniciar consulta');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
- 
-
-  
 
   return (
     <View style={styles.container}>
-      {/* ProgressBar */}
       {isLoading && (
         <View style={styles.progressBar}>
-          <ActivityIndicator size="large" color="#FFFFFF" />
+          <ActivityIndicator size="large" color="#FFF" />
         </View>
       )}
 
-      {/* Botão Voltar */}
       <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
         <Text style={styles.backButtonText}>Voltar</Text>
       </TouchableOpacity>
 
-      {/* Título */}
       <Text style={styles.title}>Detalhes da Consulta</Text>
 
-      {/* Dados da Consulta */}
       {consulta ? (
         <>
-          <Text style={styles.label}>Nome do Paciente:</Text>
-          <Text style={styles.value}>{consulta.patientName}</Text>
+          <View style={styles.infoContainer}>
+            <Text style={styles.label}>Paciente:</Text>
+            <Text style={styles.value}>{consulta.patientName}</Text>
 
-          <Text style={styles.label}>Data da Consulta:</Text>
-          <Text style={styles.value}>{consulta.appointmentDate}</Text>
+            <Text style={styles.label}>Data:</Text>
+            <Text style={styles.value}>{consulta.appointmentDate}</Text>
 
-          <Text style={styles.label}>Horário da Consulta:</Text>
-          <Text style={styles.value}>{consulta.appointmentTime}</Text>
+            <Text style={styles.label}>Horário:</Text>
+            <Text style={styles.value}>{consulta.appointmentTime}</Text>
 
-          <Text style={styles.label}>Procedimento:</Text>
-          <Text style={styles.value}>{consulta.procedureType}</Text>
+            <Text style={styles.label}>Procedimento:</Text>
+            <Text style={styles.value}>{consulta.procedureType}</Text>
+          </View>
 
-          <Text style={styles.label}>Clínica:</Text>
-          <Text style={styles.value}>{consulta.clinic}</Text>
-
-          {/* Botão Iniciar Consulta */}
           {tipoUsuario === 'dentista' && (
-            <TouchableOpacity onPress={handleIniciarConsulta} style={styles.button}>
-              <Text style={styles.buttonText}>Iniciar Consulta</Text>
+            <TouchableOpacity 
+              onPress={handleIniciarAnalise}
+              style={styles.actionButton}
+            >
+              <Text style={styles.buttonText}>Iniciar Análise</Text>
             </TouchableOpacity>
           )}
         </>
       ) : (
-        <Text style={styles.emptyListText}>Carregando detalhes da consulta...</Text>
+        <Text style={styles.loadingText}>Carregando...</Text>
       )}
     </View>
   );
-  
 };
 
 export default ConsultaPaciente;

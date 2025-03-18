@@ -22,12 +22,19 @@ export type RootStackParamList = {
     clinic: string;
     tipoUsuario: string;
   };
+  AnaliseConsulta: { 
+    appointmentId: number;
+    tipoUsuario: string; // Apenas esses dois parâmetros são necessários
+  };
   Configuracoes:{ tipoUsuario: string }; 
   ComoUsar: { tipoUsuario: string }; 
 };
 
-
 // Tipagens específicas para cada tela
+
+export type AnaliseConsultaNavigationProp = StackNavigationProp<RootStackParamList, 'AnaliseConsulta'>;
+export type AnaliseConsultaRouteProp = RouteProp<RootStackParamList, 'AnaliseConsulta'>;
+
 export type MenuPrincipalNavigationProp = StackNavigationProp<RootStackParamList, 'MenuPrincipal'>;
 export type MenuPrincipalRouteProp = RouteProp<RootStackParamList, 'MenuPrincipal'>;
 

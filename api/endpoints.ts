@@ -121,15 +121,15 @@ export const buscarConsultaPorID = async (appointmentId: number) => {
 
 
 
-// Iniciar consulta
-export const iniciarConsulta = async (appointmentId: number) => {
-  try {
-    const response = await apiClient.post(`/appointments/${appointmentId}/start`);
-    return response.data;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Erro ao iniciar consulta');
-  }
-};
+// // Iniciar consulta
+// export const iniciarConsulta = async (appointmentId: number) => {
+//   try {
+//     const response = await apiClient.post(`/appointments/${appointmentId}/start`);
+//     return response.data;
+//   } catch (error: any) {
+//     throw new Error(error.response?.data?.message || 'Erro ao iniciar consulta');
+//   }
+// };
 
 // Função para buscar clínicas
 export const buscarClinicas = async (): Promise<ClinicResponse[]> => {

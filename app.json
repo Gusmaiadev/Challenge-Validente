@@ -6,20 +6,68 @@
     "orientation": "portrait",
     "icon": "./assets/icone.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false, 
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": [
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/Montserrat-Regular.ttf",
+            "./assets/fonts/Montserrat-SemiBold.ttf",
+            "./assets/fonts/Montserrat-Bold.ttf"
+          ]
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O aplicativo precisa acessar suas fotos para anexar imagens às consultas",
+          "cameraPermission": "O aplicativo precisa acessar sua câmera para tirar fotos das consultas"
+        }
+      ],
+      [
+        "react-native-permissions", 
+        {
+          "iosPermissions": [
+            "NSCameraUsageDescription",
+            "NSPhotoLibraryUsageDescription",
+            "NSMicrophoneUsageDescription"
+          ],
+          "androidPermissions": [
+            "CAMERA",
+            "READ_EXTERNAL_STORAGE",
+            "WRITE_EXTERNAL_STORAGE",
+            "RECORD_AUDIO"
+          ]
+        }
+      ]
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "O aplicativo precisa acessar suas fotos para anexar imagens às consultas",
+        "NSCameraUsageDescription": "O aplicativo precisa acessar sua câmera para tirar fotos das consultas",
+        "NSMicrophoneUsageDescription": "O aplicativo precisa acessar o microfone para gravar vídeos"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_MEDIA_IMAGES",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.suaempresa.validente"
     },
     "web": {
       "favicon": "./assets/favicon.png"
