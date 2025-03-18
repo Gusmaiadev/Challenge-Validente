@@ -21,7 +21,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#FFFFFF',
     textAlign: 'center',
-    marginTop: 80,
+    marginTop: 150,
   },
   input: {
     backgroundColor: '#FFFFFF',
@@ -36,45 +36,43 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginBottom: 8,
   },
-  value: {
-    fontFamily: 'OpenSans-Regular',
-    fontSize: 16,
-    color: '#FFFFFF',
-    marginBottom: 8,
+  rgContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    marginTop:50,
   },
-  patientInfo: {
+  searchIcon: {
+    marginLeft: 8,
+  },
+  icon: {
+    width: 30,
+    height: 30,
+  },
+  dropdownInput: {
     backgroundColor: '#FFFFFF',
     borderRadius: 8,
-    padding: 16,
+    padding: 12,
+    marginBottom: 16,
+    justifyContent: 'center',
+  },
+  optionsContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 8,
+    padding: 8,
     marginBottom: 16,
   },
-  pickerContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    marginVertical: 16,
-  },
-  pickerItem: {
-    backgroundColor: '#FFFFFF',
-    padding: 12,
-    borderRadius: 8,
-    margin: 4,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#CCCCCC',
-    minWidth: '48%',
-  },
-  pickerItemSelected: {
-    backgroundColor: '#FF6052',
-    borderColor: '#FF6052',
+  optionItem: {
+    padding: 8,
   },
   button: {
     backgroundColor: '#FF6052',
     borderRadius: 8,
     padding: 12,
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 60,
+    marginTop:30,
+    
   },
   buttonText: {
     fontFamily: 'OpenSans-Bold',

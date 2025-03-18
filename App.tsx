@@ -1,3 +1,4 @@
+// App.tsx
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -12,20 +13,23 @@ import ComoUsar from './screens/ComoUsar/ComoUsar';
 import Configuracoes from './screens/Configuracoes/Configuracoes';
 import Consultas from './screens/Consultas/Consultas';
 import AgendamentoConsultas from './screens/AgendamentoConsultas/AgendamentoConsultas';
+import ConsultaPaciente from './screens/ConsultaPaciente/ConsultaPaciente';
 
 // Define os parâmetros das rotas
-type RootStackParamList = {
+export type RootStackParamList = {
   MenuLogin: undefined;
   LoginDentista: undefined;
   LoginAtendente: undefined;
-  MenuPrincipal: undefined;
+  MenuPrincipal: { tipoUsuario?: string }; // Parâmetro opcional
   CadastroAtendente: undefined;
   CadastroDentista: undefined;
-  CadastroConcluido: undefined;
-  ComoUsar: undefined;
+  CadastroConcluido: { tipoUsuario?: string }; // Parâmetro opcional
+  ComoUsar: { tipoUsuario?: string }; // Parâmetro opcional
   Configuracoes: undefined;
   Consultas: undefined;
   AgendamentoConsultas: undefined;
+  ConsultaAgendada: undefined;
+  ConsultaPaciente: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -88,6 +92,11 @@ const App: React.FC = () => {
         <Stack.Screen
           name="AgendamentoConsultas"
           component={AgendamentoConsultas}
+          options={{ headerShown: false }} // Desativa o cabeçalho
+        />
+        <Stack.Screen
+          name="ConsultaPaciente"
+          component={ConsultaPaciente}
           options={{ headerShown: false }} // Desativa o cabeçalho
         />
       </Stack.Navigator>

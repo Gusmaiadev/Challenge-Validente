@@ -22,11 +22,17 @@ export type RootStackParamList = {
     clinic: string;
     tipoUsuario: string;
   };
+  Configuracoes:{ tipoUsuario: string }; 
+  ComoUsar: { tipoUsuario: string }; 
 };
+
 
 // Tipagens específicas para cada tela
 export type MenuPrincipalNavigationProp = StackNavigationProp<RootStackParamList, 'MenuPrincipal'>;
 export type MenuPrincipalRouteProp = RouteProp<RootStackParamList, 'MenuPrincipal'>;
+
+export type ComoUsarNavigationProp = StackNavigationProp<RootStackParamList, 'ComoUsar'>;
+export type ComoUsarRouteProp = RouteProp<RootStackParamList, 'ComoUsar'>;
 
 export type LoginAtendenteNavigationProp = StackNavigationProp<RootStackParamList, 'LoginAtendente'>;
 export type LoginAtendenteRouteProp = RouteProp<RootStackParamList, 'LoginAtendente'>;
@@ -51,3 +57,6 @@ export type AgendamentoConsultaRouteProp = RouteProp<RootStackParamList, 'Agenda
 
 export type ConsultaPacienteNavigationProp = StackNavigationProp<RootStackParamList, 'ConsultaPaciente'>;
 export type ConsultaPacienteRouteProp = RouteProp<RootStackParamList, 'ConsultaPaciente'>;
+
+export type ConfiguracoesNavigationProp = StackNavigationProp<RootStackParamList, 'Configuracoes'>; // Tipo adicionado
+export type ConfiguracoesRouteProp = RouteProp<RootStackParamList, 'Configuracoes'>; // Tipo adicionado
