@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   Image,
   Linking,
+  StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -13,10 +14,9 @@ import styles from './MenuPrincipal.styles';
 const MenuPrincipal: React.FC = () => {
   const navigation = useNavigation();
   const [tipoUsuario, setTipoUsuario] = useState<string>('desconhecido');
-  const [iconSource, setIconSource] = useState(require('../../assets/icone.png')); // Ícone padrão
+  const [iconSource, setIconSource] = useState(require('../../assets/icone.png'));
 
   useEffect(() => {
-    // Recuperar o tipo de usuário do AsyncStorage
     const fetchTipoUsuario = async () => {
       try {
         const tipo = await AsyncStorage.getItem('tipoUsuario');
@@ -28,17 +28,16 @@ const MenuPrincipal: React.FC = () => {
         console.error('Erro ao recuperar tipo de usuário:', error);
       }
     };
-
     fetchTipoUsuario();
   }, []);
 
   const atualizarIcone = (tipo: string) => {
     switch (tipo) {
       case 'dentista':
-        setIconSource(require('../../assets/iconedentista.png'));
+        setIconSource(require('../../assets/iconedentista2.png'));
         break;
       case 'atendente':
-        setIconSource(require('../../assets/iconeatendente.png'));
+        setIconSource(require('../../assets/iconeatendente2.png'));
         break;
       default:
         setIconSource(require('../../assets/icone.png'));
@@ -51,40 +50,48 @@ const MenuPrincipal: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Ícone do Usuário */}
-      <Image source={iconSource} style={styles.iconPerson} />
+      {/* Logo alinhada à direita */}
+      <Image source={iconSource} style={styles.logo} />
 
-      {/* Título */}
-      <Text style={styles.textOdonto}>Trabalhe com segurança e qualidade</Text>
+      {/* Texto de instrução */}
+      <Text style={styles.instructionText}>Olá, escolha uma das opções abaixo:</Text>
 
-      {/* Botões */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Consultas' as never)}>
-          <Text style={styles.buttonText}>Consultas</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('HistoricoConsultas' as never)}>
-          <Text style={styles.buttonText}>Histórico de Consultas</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('Configuracoes' as never)}>
-          <Text style={styles.buttonText}>Configurações</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => navigation.navigate('ComoUsar' as never)}>
-          <Text style={styles.buttonText}>Como usar o App</Text>
-        </TouchableOpacity>
+      {/* Grid de botões */}
+      <View style={styles.gridContainer}>
+        {/* Primeira linha */}
+        <View style={styles.row}>
+          <TouchableOpacity 
+            style={styles.menuButton}
+            onPress={() => navigation.navigate('Consultas' as never)}>
+            <Image source={require('../../assets/consultas.png')} style={styles.buttonIcon}/>
+            <Text style={styles.buttonLabel}>Consultas</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuButton}
+            onPress={() => navigation.navigate('Configuracoes' as never)}>
+            <Image source={require('../../assets/configuracoes.png')} style={styles.buttonIcon}/>
+            <Text style={styles.buttonLabel}>Configurações</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Segunda linha */}
+        <View style={styles.row}>
+          <TouchableOpacity 
+            style={styles.menuButton}
+            onPress={() => navigation.navigate('ComoUsar' as never)}>
+            <Image source={require('../../assets/interrogacao.png')} style={styles.buttonIcon}/>
+            <Text style={styles.buttonLabel}>Como usar o App</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            style={styles.menuButton}
+            onPress={handleSuportePress}>
+            <Image source={require('../../assets/chat.png')} style={styles.buttonIcon}/>
+            <Text style={styles.buttonLabel}>Fale com a Odontoprev</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-
-      {/* Botão de Suporte */}
-      <TouchableOpacity style={styles.suporteButton} onPress={handleSuportePress}>
-        <Text style={styles.buttonText}>Fale com a Odontoprev</Text>
-      </TouchableOpacity>
     </View>
   );
 };

@@ -3,57 +3,56 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0066FF',
-    alignItems: 'center',
-    justifyContent: 'flex-start', // Altere de 'center' para 'flex-start'
-    paddingTop: 200, // Adicione um espaçamento no topo
+    backgroundColor: '#FFFFFF',
+    padding: 20,
   },
-  textOdonto: {
-    fontFamily: 'OpenSans-Bold',
-    fontSize: 20,
-    color: '#FFFFFF',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  iconPerson: {
-    width: 51,
-    height: 52,
-    position: 'absolute',
-    top: 90, // Ajuste para mover o ícone mais para baixo
-    right: 30,
+  logo: {
+    width: 60,
+    height: 60,
+    alignSelf: 'flex-end',
+    marginTop: 90,
+    marginRight: 20,
     resizeMode: 'contain',
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-around',
-    width: '100%',
-    marginTop: 50, // Aumente o valor para mover os botões mais para baixo
+  instructionText: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 18,
+    color: '#000000',
+    marginTop: 120,
+    marginLeft: 20,
+    marginBottom:-60,
   },
-  button: {
-    width: 177,
-    height: 157,
-    backgroundColor: '#FF6052',
-    borderRadius: 30,
+  gridContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginBottom: 20,
+  },
+  menuButton: {
+    backgroundColor: '#E2EEFF',
+    borderRadius: 10,
+    width: 160,
+    height: 160,
     justifyContent: 'center',
     alignItems: 'center',
-    marginVertical: 10,
+    padding: 15,
   },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 19,
-    fontWeight: 'bold',
+  buttonIcon: {
+    width: 60,
+    height: 60,
+    marginBottom: 15,
+    resizeMode: 'contain',
+  },
+  buttonLabel: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 14,
+    color: '#000000',
     textAlign: 'center',
   },
-  suporteButton: {
-    width: 387,
-    height: 137,
-    backgroundColor: '#FF6052',
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 20,
-  },
 });
+
 
 export default styles;
