@@ -6,7 +6,8 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  ScrollView
+  ScrollView,
+  Image,
 } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { useNavigation } from '@react-navigation/native';
@@ -28,6 +29,7 @@ const CadastroAtendente: React.FC = () => {
   const [senha, setSenha] = useState('');
   const [rg, setRg] = useState('');
   const [dataNascimento, setDataNascimento] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Buscar clínicas ao carregar a tela
   useEffect(() => {
@@ -111,75 +113,91 @@ const CadastroAtendente: React.FC = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      {/* ProgressBar */}
       {isLoading && (
         <View style={styles.progressBar}>
           <ActivityIndicator size="large" color="#FFFFFF" />
         </View>
       )}
 
-      {/* Título */}
-      <Text style={styles.title}>Cadastro Atendente</Text>
+      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <Image source={require('../../assets/vol.png')} style={styles.backIcon} />
+      </TouchableOpacity>
 
-      {/* Inputs */}
+      <Image source={require('../../assets/odontoprev-logo.png')} style={styles.logo} />
+
+      <Text style={styles.title}>Faça seu Cadastro, Atendente:</Text>
+
+      <Text style={styles.label}>Nome:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Nome"
+        placeholder="Nome Completo"
+        placeholderTextColor="#343232"
         value={nome}
         onChangeText={setNome}
       />
+
+      <Text style={styles.label}>E-mail:</Text>
       <TextInput
         style={styles.input}
-        placeholder="E-mail"
+        placeholder="Insira seu E-mail"
+        placeholderTextColor="#343232"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
       />
+
+      <Text style={styles.label}>RG:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Senha"
-        value={senha}
-        onChangeText={setSenha}
-        secureTextEntry
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="RG"
+        placeholder="Insira seu RG"
+        placeholderTextColor="#343232"
         value={rg}
         onChangeText={setRg}
         keyboardType="numeric"
       />
+
+      <Text style={styles.label}>Data de Nascimento:</Text>
       <TextInput
         style={styles.input}
-        placeholder="Data de Nascimento (DD/MM/AAAA)"
+        placeholder="DD/MM/AAAA"
+        placeholderTextColor="#343232"
         value={dataNascimento}
         onChangeText={setDataNascimento}
         keyboardType="numeric"
       />
 
-      {/* Picker para Clínicas */}
+      <Text style={styles.label}>Senha:</Text>
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Crie sua senha"
+          placeholderTextColor="#343232"
+          value={senha}
+          onChangeText={setSenha}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Image source={require('../../assets/eye-icon.png')} style={styles.eyeIcon} />
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.label}>Unidade:</Text>
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={selectedClinic}
           onValueChange={(itemValue) => setSelectedClinic(itemValue)}
           style={styles.picker}>
-          <Picker.Item label="Selecione uma clínica" value={null} />
+          <Picker.Item label="Escolha sua Unidade" value={null} />
           {clinics.map((clinic) => (
             <Picker.Item key={clinic.id} label={clinic.name} value={clinic.id} />
           ))}
         </Picker>
       </View>
 
-      {/* Botões */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => navigation.goBack()}>
-          <Text style={styles.buttonText}>Voltar</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleCadastro}>
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        </TouchableOpacity>
-      </View>
+      <TouchableOpacity style={styles.registerButton} onPress={handleCadastro}>
+        <Text style={styles.registerButtonText}>Cadastre-se</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };

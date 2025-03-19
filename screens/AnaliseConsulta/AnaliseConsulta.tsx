@@ -11,8 +11,7 @@ import {
   Linking
 } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { launchCamera, launchImageLibrary, type CameraOptions, type ImageLibraryOptions } from 'react-native-image-picker';
-import { request, PERMISSIONS, type PermissionStatus } from 'react-native-permissions';
+import * as ImagePicker from 'expo-image-picker';
 import { AnaliseConsultaNavigationProp, AnaliseConsultaRouteProp } from '../../src/navigation/navigationTypes';
 import { buscarConsultaPorID } from '../../api/endpoints';
 import styles from './AnaliseConsulta.styles';
@@ -28,7 +27,6 @@ const AnaliseConsulta: React.FC = () => {
   const navigation = useNavigation<AnaliseConsultaNavigationProp>();
   const route = useRoute<AnaliseConsultaRouteProp>();
   
-  // Estados
   const [isLoading, setIsLoading] = useState(false);
   const [consulta, setConsulta] = useState<ConsultaData | null>(null);
   const [fotoInicialUri, setFotoInicialUri] = useState<string | null>(null);
@@ -43,7 +41,6 @@ const AnaliseConsulta: React.FC = () => {
 
   const { appointmentId, tipoUsuario } = route.params;
 
-  // Carrega dados da consulta
   useEffect(() => {
     const carregarConsulta = async () => {
       setIsLoading(true);
@@ -69,29 +66,16 @@ const AnaliseConsulta: React.FC = () => {
     carregarConsulta();
   }, [appointmentId]);
 
-  // Verifica permissões
-  const verificarPermissao = async (permission: any): Promise<PermissionStatus> => {
-    try {
-      return await request(permission);
-    } catch (error) {
-      Alert.alert('Erro', 'Falha ao verificar permissões');
-      return 'unavailable';
-    }
+  const verificarPermissao = async (): Promise<boolean> => {
+    const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
+    return status === ImagePicker.PermissionStatus.GRANTED;
   };
 
-  // Manipula seleção de imagem
   const handleImageSelection = async (source: 'camera' | 'gallery') => {
     try {
-      let permission;
-      if (source === 'camera') {
-        permission = PERMISSIONS.ANDROID.CAMERA;
-      } else {
-        permission = PERMISSIONS.ANDROID.READ_MEDIA_IMAGES;
-      }
-
-      const status = await verificarPermissao(permission);
-
-      if (status !== 'granted') {
+      const permission = await verificarPermissao();
+      
+      if (!permission) {
         Alert.alert(
           'Permissão necessária',
           'Por favor, permita o acesso nas configurações',
@@ -103,23 +87,34 @@ const AnaliseConsulta: React.FC = () => {
         return;
       }
 
-      const options: CameraOptions | ImageLibraryOptions = {
-        mediaType: 'photo',
-        quality: 0.8,
-        includeBase64: false,
-      };
+      let result;
+      if (source === 'camera') {
+        result = await ImagePicker.launchCameraAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.8,
+          allowsEditing: true,
+        });
+      } else {
+        result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          quality: 0.8,
+          allowsEditing: true,
+        });
+      }
 
-      const result = source === 'camera' 
-        ? await launchCamera(options as CameraOptions)
-        : await launchImageLibrary(options as ImageLibraryOptions);
-
-      if (result.assets?.[0]?.uri) {
+      if (!result.canceled && result.assets[0]?.uri) {
         const uri = result.assets[0].uri;
         const fileName = uri.split('/').pop() || 'foto.jpg';
 
         currentPhotoType === 'inicial'
-          ? (setFotoInicialUri(uri), setFileName(prev => ({ ...prev, inicial: fileName })))
-          : (setFotoFinalUri(uri), setFileName(prev => ({ ...prev, final: fileName })));
+        ? (
+            setFotoInicialUri(uri),
+            setFileName(prev => ({ ...prev, inicial: fileName }))
+          )
+        : (
+            setFotoFinalUri(uri),
+            setFileName(prev => ({ ...prev, final: fileName }))
+          );
       }
     } catch (error) {
       Alert.alert('Erro', 'Falha ao acessar a imagem');
@@ -128,7 +123,6 @@ const AnaliseConsulta: React.FC = () => {
     }
   };
 
-  // Finaliza consulta
   const handleFinalizar = () => {
     if (!fotoInicialUri || !fotoFinalUri) {
       Alert.alert('Atenção', 'É necessário enviar ambas as fotos');
@@ -137,7 +131,6 @@ const AnaliseConsulta: React.FC = () => {
     setShowSuccessModal(true);
   };
 
-  // Fecha modal e navega
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     navigation.navigate('MenuPrincipal', { tipoUsuario });
@@ -205,7 +198,6 @@ const AnaliseConsulta: React.FC = () => {
         )}
       </View>
 
-      {/* Modal de Seleção de Imagem */}
       <Modal
         visible={showImagePicker}
         transparent={true}
@@ -238,7 +230,6 @@ const AnaliseConsulta: React.FC = () => {
         </View>
       </Modal>
 
-      {/* Modal de Sucesso */}
       <Modal
         visible={showSuccessModal}
         transparent={true}

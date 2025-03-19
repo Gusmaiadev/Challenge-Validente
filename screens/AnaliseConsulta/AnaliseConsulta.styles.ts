@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
+    marginBottom: 0,
   },
   sectionTitle: {
     fontFamily: 'Montserrat-Bold',
@@ -125,7 +125,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 18,
     alignItems: 'center',
-    marginTop: 50,
+    marginTop: 30,
+    marginBottom:80,
+  
   },
   disabledButton: {
     backgroundColor: '#0066FF',
@@ -136,7 +138,6 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 
-  // Novos estilos do modal
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',

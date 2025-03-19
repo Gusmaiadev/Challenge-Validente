@@ -1,72 +1,117 @@
+// LoginDentista.styles.ts
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0066FF',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingTop: 40,
   },
-  topImage: {
-    width: 210,
-    height: 202,
-    marginBottom: 20,
-    resizeMode: 'contain', // Garante que a imagem não seja cortada
+  backButton: {
+    position: 'absolute',
+    top: 90,
+    left: 20,
+    zIndex: 1,
   },
-  dentistIcon: {
-    width: 125,
-    height: 121,
-    marginBottom: 20,
+  backIcon: {
+    width: 30,
+    height: 30,
+    resizeMode: 'contain',
+  },
+  logo: {
+    width: 200,
+    height: 100,
+    alignSelf: 'center',
+    marginTop: 160,
+    marginBottom: 0,
   },
   title: {
-    fontFamily: 'OpenSans-Bold', // Certifique-se de carregar a fonte Open Sans Bold
-    fontSize: 25,
-    color: '#FFFFFF',
-    marginBottom: 20,
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 20,
+    color: '#000000',
+    marginBottom: 40,
+  },
+  form: {
+    paddingHorizontal: 30,
+  },
+  inputLabel: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 16,
+    color: '#000000',
+    marginBottom: 8,
   },
   input: {
-    width: 341,
-    height: 51,
+    height: 50,
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    paddingHorizontal: 15,
+    borderWidth: 1,
+    borderColor: '#0066FF',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 20,
+    fontFamily: 'Montserrat-Regular',
     fontSize: 16,
+  },
+  passwordInput: {
+    position: 'relative',
+  },
+  eyeButton: {
+    position: 'absolute',
+    right: 15,
+    top: 13,
+  },
+  eyeIcon: {
+    width: 24,
+    height: 24,
+  },
+  forgotPassword: {
+    alignSelf: 'flex-end',
+    marginBottom: 30,
+  },
+  forgotPasswordText: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
+    color: '#0066FF',
+  },
+  loginButton: {
+    backgroundColor: '#0066FF',
+    borderRadius: 10,
+    height: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 20,
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '80%',
-    marginTop: 20,
-  },
-  button: {
-    width: 130,
-    height: 64,
-    backgroundColor: '#FF6052',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  linkText: {
-    fontFamily: 'OpenSans-Bold',
+  loginButtonText: {
+    fontFamily: 'Montserrat-Bold',
     fontSize: 18,
     color: '#FFFFFF',
-    marginTop: 10,
   },
-  progressBar: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
+  registerContainer: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  registerText: {
+    fontFamily: 'Montserrat-Regular',
+    fontSize: 14,
+    color: '#000000',
+    marginBottom: 10,
+  },
+  registerButton: {
+    borderWidth: 2,
+    borderColor: '#0066FF',
+    borderRadius: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 40,
+  },
+  registerButtonText: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 16,
+    color: '#0066FF',
+  },
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
 });
 
