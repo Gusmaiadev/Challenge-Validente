@@ -32,7 +32,7 @@ const Configuracoes: React.FC = () => {
       {/* Botão Voltar */}
       <TouchableOpacity onPress={handleVoltar} style={styles.backButton}>
         <Image
-          source={require('../../assets/vol.png')} // Substitua pelo caminho correto do ícone
+          source={require('../../assets/vol.png')}
           style={styles.backIcon}
         />
       </TouchableOpacity>
@@ -40,39 +40,48 @@ const Configuracoes: React.FC = () => {
       {/* Título */}
       <Text style={styles.title}>Configurações</Text>
 
+      {/* Texto de Permissões */}
+      <Text style={styles.permissionsText}>Permitir acesso:</Text>
+
       {/* Opções de Configuração */}
       <View style={styles.settingsContainer}>
         {/* Câmera */}
-        <View style={styles.settingRow}>
-          <Text style={styles.settingLabel}>Câmera</Text>
-          <Switch
-            value={cameraEnabled}
-            onValueChange={setCameraEnabled}
-            trackColor={{ false: '#767577', true: '#FF6052' }}
-            thumbColor="#FFFFFF"
-          />
+        <View style={styles.settingWrapper}>
+          <View style={styles.settingRow}>
+            <Text style={styles.settingLabel}>Câmera</Text>
+            <Switch
+              value={cameraEnabled}
+              onValueChange={setCameraEnabled}
+              trackColor={{ false: '#767577', true: '#0066FF' }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
         </View>
 
         {/* Flash */}
-        <View style={styles.settingRow}>
-          <Text style={styles.settingLabel}>Flash</Text>
-          <Switch
-            value={flashEnabled}
-            onValueChange={setFlashEnabled}
-            trackColor={{ false: '#767577', true: '#FF6052' }}
-            thumbColor="#FFFFFF"
-          />
+        <View style={styles.settingWrapper}>
+          <View style={styles.settingRow}>
+            <Text style={styles.settingLabel}>Flash</Text>
+            <Switch
+              value={flashEnabled}
+              onValueChange={setFlashEnabled}
+              trackColor={{ false: '#767577', true: '#0066FF' }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
         </View>
 
         {/* Segundo Plano */}
-        <View style={styles.settingRow}>
-          <Text style={styles.settingLabel}>Segundo plano</Text>
-          <Switch
-            value={backgroundEnabled}
-            onValueChange={setBackgroundEnabled}
-            trackColor={{ false: '#767577', true: '#FF6052' }}
-            thumbColor="#FFFFFF"
-          />
+        <View style={styles.settingWrapper}>
+          <View style={styles.settingRow}>
+            <Text style={styles.settingLabel}>Segundo plano</Text>
+            <Switch
+              value={backgroundEnabled}
+              onValueChange={setBackgroundEnabled}
+              trackColor={{ false: '#767577', true: '#0066FF' }}
+              thumbColor="#FFFFFF"
+            />
+          </View>
         </View>
       </View>
     </View>

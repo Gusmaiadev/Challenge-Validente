@@ -14,63 +14,68 @@ const ComoUsar: React.FC = () => {
   const navigation = useNavigation<ComoUsarNavigationProp>();
   const route = useRoute<ComoUsarRouteProp>();
 
-  // Recupera o tipo de usuário passado como parâmetro
   const tipoUsuario = route.params?.tipoUsuario;
 
-  // Função para voltar ao MenuPrincipal
   const handleVoltar = () => {
     navigation.navigate('MenuPrincipal', { tipoUsuario });
   };
 
   return (
     <ScrollView style={styles.container}>
+      {/* Botão Voltar com ícone */}
+      <TouchableOpacity onPress={handleVoltar} style={styles.backButton}>
+        <Image 
+          source={require('../../assets/vol.png')}
+          style={styles.backIcon}
+        />
+      </TouchableOpacity>
+
       {/* Logo */}
       <Image
-        source={require('../../assets/icone.png')} // Substitua pelo caminho correto do ícone
+        source={require('../../assets/odontoprev-logo.png')}
         style={styles.logo}
       />
 
-      {/* Texto de Boas-vindas */}
-      <Text style={styles.welcomeText}>
-        Bem-vindo ao serviço de foto consulta da Odontoprev, aqui a consulta de seus clientes tem mais segurança!
-      </Text>
+      {/* Textos principais */}
+      <View style={styles.headerTextContainer}>
+        <Text style={styles.mainTitle}>Bem-vindo ao Serviço de Foto Consulta da Odontoprev!</Text>
+        <Text style={styles.subTitle}>
+          Aqui, a consulta dos seus clientes ganha mais segurança e praticidade!
+        </Text>
+      </View>
 
-      {/* Seção: Agendar Consulta */}
-      <Text style={styles.sectionTitle}>Agendar Consulta</Text>
-      <Text style={styles.sectionDescription}>
-        Após logar como atendente, vá até 'Consulta' e selecione 'Agendar Consulta'.
-      </Text>
-      <Text style={styles.sectionDescription}>
-        Digite o RG do paciente. Se estiver cadastrado, selecione o nome e agende a consulta. Caso contrário, cadastre
-        um novo paciente clicando no ícone '+'.
-      </Text>
+      {/* Conteúdo */}
+      <View style={styles.content}>
+        {/* Seção 1 */}
+        <Text style={styles.sectionTitle}>1. Agendar Consulta</Text>
+        <Text style={styles.sectionText}>
+          • Faça login como atendente.{"\n"}
+          • Acesse a opção "Consulta" e clique em "Agendar Consulta".{"\n"}
+          • Insira o RG do paciente. Se já cadastrado, selecione o nome.{"\n"}
+          • Caso novo paciente, clique no ícone "+" para cadastrar.
+        </Text>
 
-      {/* Seção: Iniciar Atendimento */}
-      <Text style={styles.sectionTitle}>Iniciar Atendimento</Text>
-      <Text style={styles.sectionDescription}>
-        No dia da consulta, vá em 'Consultas', selecione o paciente, e clique em 'Iniciar'.
-      </Text>
+        {/* Seção 2 */}
+        <Text style={styles.sectionTitle}>2. Iniciar Atendimento</Text>
+        <Text style={styles.sectionText}>
+          • No dia da consulta, acesse "Consultas".{"\n"}
+          • Selecione o paciente e clique em "Iniciar".
+        </Text>
 
-      {/* Seção: Envio de Fotos */}
-      <Text style={styles.sectionTitle}>Envio de Fotos</Text>
-      <Text style={styles.sectionDescription}>
-        O dentista deve enviar fotos antes e depois do procedimento via aplicativo, podendo tirar diretamente ou escolher
-        da galeria.
-      </Text>
-      <Text style={styles.sectionDescription}>
-        Após o envio das fotos, aguarde a validação para continuar ou finalizar a consulta.
-      </Text>
+        {/* Seção 3 */}
+        <Text style={styles.sectionTitle}>3. Envio de Fotos</Text>
+        <Text style={styles.sectionText}>
+          • Envie fotos antes/depois do procedimento.{"\n"}
+          • Fotos podem ser tiradas ou selecionadas da galeria.{"\n"}
+          • Aguarde validação das imagens para continuar.
+        </Text>
 
-      {/* Seção: Finalização */}
-      <Text style={styles.sectionTitle}>Finalização</Text>
-      <Text style={styles.sectionDescription}>
-        Após a consulta, o dentista será notificado do sucesso do atendimento.
-      </Text>
-
-      {/* Botão Voltar */}
-      <TouchableOpacity style={styles.button} onPress={handleVoltar}>
-        <Text style={styles.buttonText}>Voltar</Text>
-      </TouchableOpacity>
+        {/* Seção 4 */}
+        <Text style={styles.sectionTitle}>4. Finalização</Text>
+        <Text style={styles.sectionText}>
+          • Dentista será notificado sobre o sucesso do atendimento.
+        </Text>
+      </View>
     </ScrollView>
   );
 };
