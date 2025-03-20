@@ -82,6 +82,16 @@ export const excluirConsulta = async (appointmentId: number): Promise<void> => {
   }
 };
 
+export const alterarConsulta = async (appointmentId: number, dados: any) => {
+  try {
+    const response = await apiClient.patch(`/appointments/${appointmentId}`, dados);
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error, 'alterar consulta');
+    throw error;
+  }
+};
+
 export const buscarClinicas = async (): Promise<ClinicResponse[]> => {
   try {
     const response = await apiClient.get<ClinicResponse[]>('/clinics');
