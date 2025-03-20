@@ -7,9 +7,17 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  Image,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { buscarPacientePorRG, criarPaciente, agendarConsulta, buscarProcedimentos, buscarDentistas } from '../../api/endpoints';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { 
+  buscarPacientePorRG, 
+  criarPaciente, 
+  agendarConsulta, 
+  buscarProcedimentos, 
+  buscarDentistas 
+} from '../../api/endpoints';
 import styles from './AgendamentoConsultas.styles';
 
 const AgendamentoConsultas: React.FC = () => {
@@ -20,6 +28,7 @@ const AgendamentoConsultas: React.FC = () => {
   const [procedimentos, setProcedimentos] = useState<{ id: number; name: string }[]>([]);
   const [dentistas, setDentistas] = useState<{ id: number; name: string }[]>([]);
   const [nomePaciente, setNomePaciente] = useState('');
+  const [rgPacienteDados, setRgPacienteDados] = useState('');
   const [dataNascimento, setDataNascimento] = useState('');
   const [idOdontoPrev, setIdOdontoPrev] = useState('');
   const [dataConsulta, setDataConsulta] = useState('');
@@ -28,27 +37,30 @@ const AgendamentoConsultas: React.FC = () => {
   const [dentistaSelecionado, setDentistaSelecionado] = useState<number | null>(null);
   const [showProcedimentoOptions, setShowProcedimentoOptions] = useState(false);
   const [showDentistaOptions, setShowDentistaOptions] = useState(false);
+  const [clinicId, setClinicId] = useState<number>(1);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
 
-  // Carregar procedimentos e dentistas ao iniciar
   useEffect(() => {
-    carregarDadosIniciais();
+    const carregarDados = async () => {
+      await carregarDadosIniciais();
+      const storedClinicId = await AsyncStorage.getItem('clinicId');
+      if (storedClinicId) setClinicId(parseInt(storedClinicId, 10));
+    };
+    carregarDados();
   }, []);
 
   const carregarDadosIniciais = async () => {
     setIsLoading(true);
     try {
-      console.log('Carregando procedimentos...');
-      const procedimentosResponse = await buscarProcedimentos();
-      console.log('Procedimentos carregados:', procedimentosResponse);
-      setProcedimentos(procedimentosResponse.map((p: any) => ({ id: p.id, name: p.name })));
-
-      console.log('Carregando dentistas...');
-      const dentistasResponse = await buscarDentistas();
-      console.log('Dentistas carregados:', dentistasResponse);
-      setDentistas(dentistasResponse.map((d: any) => ({ id: d.id, name: d.name })));
+      const [procedimentosRes, dentistasRes] = await Promise.all([
+        buscarProcedimentos(),
+        buscarDentistas()
+      ]);
+      
+      setProcedimentos(procedimentosRes.map((p: any) => ({ id: p.id, name: p.name })));
+      setDentistas(dentistasRes.map((d: any) => ({ id: d.id, name: d.name })));
     } catch (error: any) {
-      console.error('Erro ao carregar dados iniciais:', error.message || error);
-      Alert.alert('Erro', error.message || 'Erro ao carregar dados');
+      handleError('Carregar dados iniciais', error);
     } finally {
       setIsLoading(false);
     }
@@ -56,22 +68,20 @@ const AgendamentoConsultas: React.FC = () => {
 
   const handleBuscarPaciente = async () => {
     if (!rgPaciente.trim()) {
-      Alert.alert('Atenção', 'Digite o RG do paciente.');
+      Alert.alert('Atenção', 'Digite o RG do paciente');
       return;
     }
 
     setIsLoading(true);
     try {
-      console.log('Buscando paciente por RG:', rgPaciente);
-      const pacienteResponse = await buscarPacientePorRG(rgPaciente);
-      console.log('Paciente encontrado:', pacienteResponse);
-      setPaciente(pacienteResponse);
-      setNomePaciente(pacienteResponse.name);
-      setDataNascimento(pacienteResponse.birthDate.split('T')[0]); // Formato: yyyy-MM-dd
-      setIdOdontoPrev(pacienteResponse.numCard.toString());
+      const pacienteRes = await buscarPacientePorRG(rgPaciente);
+      setPaciente(pacienteRes);
+      setNomePaciente(pacienteRes.name);
+      setRgPacienteDados(pacienteRes.rg);
+      setDataNascimento(formatarDataBrasileira(pacienteRes.birthDate));
+      setIdOdontoPrev(pacienteRes.numCard.toString());
     } catch (error: any) {
-      console.error('Erro ao buscar paciente:', error.message || error);
-      Alert.alert('Erro', error.message || 'Paciente não encontrado');
+      handleError('Buscar paciente', error);
       limparDadosPaciente();
     } finally {
       setIsLoading(false);
@@ -79,31 +89,54 @@ const AgendamentoConsultas: React.FC = () => {
   };
 
   const limparDadosPaciente = () => {
-    console.log('Limpando dados do paciente...');
     setPaciente(null);
     setNomePaciente('');
+    setRgPacienteDados('');
     setDataNascimento('');
     setIdOdontoPrev('');
   };
 
-  const handleCriarPaciente = async () => {
-    setIsLoading(true);
-    try {
-      const novoPaciente = await criarPaciente({
-        name: nomePaciente,
-        rg: rgPaciente,
-        birthDate: dataNascimento,
-        numCard: parseInt(idOdontoPrev, 10),
-      });
-      console.log('Novo paciente criado:', novoPaciente);
-      setPaciente(novoPaciente);
-      Alert.alert('Sucesso', 'Paciente cadastrado com sucesso');
-    } catch (error: any) {
-      console.error('Erro ao cadastrar paciente:', error.message || error);
-      Alert.alert('Erro', error.message || 'Erro ao cadastrar paciente');
-    } finally {
-      setIsLoading(false);
+  const validarFormatoData = (data: string, formato: RegExp): boolean => {
+    if (!formato.test(data)) {
+      Alert.alert('Formato inválido', `Use o formato ${formato}`);
+      return false;
     }
+    return true;
+  };
+
+  const formatarDataBrasileira = (data: string) => {
+    const [ano, mes, dia] = data.split('T')[0].split('-');
+    return `${dia}/${mes}/${ano}`;
+  };
+
+  const converterDataParaAPI = (data: string) => {
+    const [dia, mes, ano] = data.split('/');
+    return `${ano}-${mes}-${dia}`;
+  };
+
+  const validarCampos = (): boolean => {
+    const validacoes = [
+      { condicao: !rgPacienteDados.trim(), mensagem: 'Informe o RG do paciente' },
+      { condicao: !nomePaciente.trim(), mensagem: 'Informe o nome do paciente' },
+      { condicao: !dataNascimento.trim(), mensagem: 'Informe a data de nascimento' },
+      { condicao: !idOdontoPrev.trim(), mensagem: 'Informe o ID Odontoprev' },
+      { condicao: !dataConsulta.trim(), mensagem: 'Informe a data da consulta' },
+      { condicao: !horarioConsulta.trim(), mensagem: 'Informe o horário da consulta' },
+      { condicao: !procedimentoSelecionado, mensagem: 'Selecione um procedimento' },
+      { condicao: !dentistaSelecionado, mensagem: 'Selecione um dentista' },
+    ];
+
+    for (const validacao of validacoes) {
+      if (validacao.condicao) {
+        Alert.alert('Erro', validacao.mensagem);
+        return false;
+      }
+    }
+
+    if (!validarFormatoData(dataConsulta, /^\d{2}\/\d{2}\/\d{4}$/)) return false;
+    if (!validarFormatoData(horarioConsulta, /^\d{2}:\d{2}$/)) return false;
+
+    return true;
   };
 
   const handleAgendarConsulta = async () => {
@@ -112,210 +145,236 @@ const AgendamentoConsultas: React.FC = () => {
     setIsLoading(true);
     try {
       let patientId = paciente?.id;
+      
       if (!patientId) {
         const novoPaciente = await criarPaciente({
           name: nomePaciente,
-          rg: rgPaciente,
-          birthDate: dataNascimento,
-          numCard: parseInt(idOdontoPrev, 10),
+          rg: rgPacienteDados,
+          birthDate: converterDataParaAPI(dataNascimento),
+          numCard: parseInt(idOdontoPrev, 10)
         });
-        console.log('Novo paciente criado:', novoPaciente);
         patientId = novoPaciente.id;
       }
 
-      if (!procedimentoSelecionado || !dentistaSelecionado) {
-        throw new Error('Selecione um procedimento e um dentista válidos.');
-      }
-
-      const dadosConsulta = {
-        dateAppointment: dataConsulta,
+      const payload = {
+        dateAppointment: converterDataParaAPI(dataConsulta),
         timeAppointment: horarioConsulta,
-        dentistId: dentistaSelecionado,
-        patientId: patientId,
-        procedureTypeId: procedimentoSelecionado,
+        dentistId: dentistaSelecionado!,
+        patientId: patientId!,
+        procedureTypeId: procedimentoSelecionado!,
+        clinicId: clinicId,
+        procedureValidationId: 1
       };
-      console.log('Enviando dados para agendar consulta:', dadosConsulta);
 
-      await agendarConsulta(dadosConsulta);
-      console.log('Consulta agendada com sucesso');
-      Alert.alert('Sucesso', 'Consulta agendada com sucesso');
-      navigation.goBack();
+      await agendarConsulta(payload);
+      setShowSuccessAlert(true);
+      setTimeout(() => {
+        setShowSuccessAlert(false);
+        navigation.goBack();
+      }, 2000);
     } catch (error: any) {
-      console.error('Erro ao agendar consulta:', error.message || error);
-      Alert.alert('Erro', error.message || 'Erro ao agendar consulta');
+      handleError('Agendar consulta', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const validarCampos = (): boolean => {
-    if (!rgPaciente.trim()) {
-      Alert.alert('Erro', 'Informe o RG do paciente.');
-      return false;
-    }
-    if (!nomePaciente.trim()) {
-      Alert.alert('Erro', 'Informe o nome do paciente.');
-      return false;
-    }
-    if (!dataNascimento.trim()) {
-      Alert.alert('Erro', 'Informe a data de nascimento do paciente.');
-      return false;
-    }
-    if (!idOdontoPrev.trim()) {
-      Alert.alert('Erro', 'Informe o ID Odontoprev do paciente.');
-      return false;
-    }
-    if (!dataConsulta.trim()) {
-      Alert.alert('Erro', 'Informe a data da consulta.');
-      return false;
-    }
-    if (!horarioConsulta.trim()) {
-      Alert.alert('Erro', 'Informe o horário da consulta.');
-      return false;
-    }
-    if (!procedimentoSelecionado) {
-      Alert.alert('Erro', 'Selecione um procedimento.');
-      return false;
-    }
-    if (!dentistaSelecionado) {
-      Alert.alert('Erro', 'Selecione um dentista.');
-      return false;
-    }
-    return true;
+  const handleError = (contexto: string, error: any) => {
+    console.error(`Erro em ${contexto}:`, error);
+    const mensagem = error.response?.data?.message || error.message || 'Erro desconhecido';
+    Alert.alert('Erro', `${mensagem} (${contexto})`);
   };
 
   return (
-    <ScrollView style={styles.container}>
-      {/* ProgressBar */}
+    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
       {isLoading && (
-        <View style={styles.progressBar}>
-          <ActivityIndicator size="large" color="#FFFFFF" />
+        <View style={styles.overlay}>
+          <ActivityIndicator size="large" color="#0066FF" />
         </View>
       )}
 
-      {/* Botão Voltar */}
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.backButtonText}>Voltar</Text>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Image source={require('../../assets/vol.png')} style={styles.backButtonImage} />
       </TouchableOpacity>
 
-      {/* Título */}
-      <Text style={styles.title}>Agendamento de Consulta</Text>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Agendamento</Text>
+        <Text style={styles.subtitle}>Consulta</Text>
+      </View>
 
-      {/* Campo de RG do Paciente */}
-      <View style={styles.rgContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="RG do Paciente"
-          keyboardType="numeric"
-          value={rgPaciente}
-          onChangeText={setRgPaciente}
-        />
-        <TouchableOpacity onPress={handleBuscarPaciente} style={styles.searchIcon}>
-          <Text>🔍</Text> {/* Ícone de lupa */}
-        </TouchableOpacity>
+      {/* Seção de Busca por RG */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>RG do Paciente:</Text>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={[styles.input, styles.searchInput]}
+            placeholder="RG do paciente"
+            placeholderTextColor="#666"
+            keyboardType="numeric"
+            value={rgPaciente}
+            onChangeText={setRgPaciente}
+          />
+          <TouchableOpacity style={styles.searchButton} onPress={handleBuscarPaciente}>
+            <Image source={require('../../assets/search.png')} style={styles.searchIcon} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Dados do Paciente */}
-      <Text style={styles.label}>Dados do Paciente</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Nome Completo"
-        value={nomePaciente}
-        onChangeText={setNomePaciente}
-        editable={!paciente}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="RG"
-        value={rgPaciente}
-        onChangeText={setRgPaciente}
-        editable={!paciente}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Data de Nascimento (yyyy-MM-dd)"
-        value={dataNascimento}
-        onChangeText={setDataNascimento}
-        editable={!paciente}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="ID Odontoprev"
-        value={idOdontoPrev}
-        onChangeText={setIdOdontoPrev}
-        keyboardType="numeric"
-        editable={!paciente}
-      />
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Dados do Paciente:</Text>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Nome Completo:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Insira seu Nome Completo"
+            placeholderTextColor="#666"
+            value={nomePaciente}
+            onChangeText={setNomePaciente}
+            editable={!paciente}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>RG:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Insira seu RG"
+            placeholderTextColor="#666"
+            keyboardType="numeric"
+            value={rgPacienteDados}
+            onChangeText={setRgPacienteDados}
+            editable={!paciente}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Data de Nascimento:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="DD/MM/AAAA"
+            placeholderTextColor="#666"
+            value={dataNascimento}
+            onChangeText={setDataNascimento}
+            editable={!paciente}
+          />
+        </View>
+
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>ID Odontoprev:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Insira o ID"
+            placeholderTextColor="#666"
+            keyboardType="numeric"
+            value={idOdontoPrev}
+            onChangeText={setIdOdontoPrev}
+            editable={!paciente}
+          />
+        </View>
+      </View>
 
       {/* Dados da Consulta */}
-      <Text style={styles.label}>Dados da Consulta</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Data da Consulta (yyyy-MM-dd)"
-        value={dataConsulta}
-        onChangeText={setDataConsulta}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Horário da Consulta (HH:mm)"
-        value={horarioConsulta}
-        onChangeText={setHorarioConsulta}
-      />
-
-      {/* Procedimento */}
-      <Text style={styles.label}>Procedimento</Text>
-      <TouchableOpacity
-        style={styles.dropdownInput}
-        onPress={() => setShowProcedimentoOptions(!showProcedimentoOptions)}
-      >
-        <Text>{procedimentoSelecionado ? procedimentos.find(p => p.id === procedimentoSelecionado)?.name : 'Selecione um procedimento'}</Text>
-      </TouchableOpacity>
-      {showProcedimentoOptions && (
-        <View style={styles.optionsContainer}>
-          {procedimentos.map((procedimento) => (
-            <TouchableOpacity
-              key={procedimento.id}
-              style={styles.optionItem}
-              onPress={() => {
-                setProcedimentoSelecionado(procedimento.id);
-                setShowProcedimentoOptions(false);
-              }}
-            >
-              <Text>{procedimento.name}</Text>
-            </TouchableOpacity>
-          ))}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Dados da Consulta:</Text>
+        
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Data Consulta:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="DD/MM/AAAA"
+            placeholderTextColor="#666"
+            value={dataConsulta}
+            onChangeText={setDataConsulta}
+          />
         </View>
-      )}
 
-      {/* Dentista */}
-      <Text style={styles.label}>Dentista</Text>
-      <TouchableOpacity
-        style={styles.dropdownInput}
-        onPress={() => setShowDentistaOptions(!showDentistaOptions)}
-      >
-        <Text>{dentistaSelecionado ? dentistas.find(d => d.id === dentistaSelecionado)?.name : 'Selecione um dentista'}</Text>
-      </TouchableOpacity>
-      {showDentistaOptions && (
-        <View style={styles.optionsContainer}>
-          {dentistas.map((dentista) => (
-            <TouchableOpacity
-              key={dentista.id}
-              style={styles.optionItem}
-              onPress={() => {
-                setDentistaSelecionado(dentista.id);
-                setShowDentistaOptions(false);
-              }}
-            >
-              <Text>{dentista.name}</Text>
-            </TouchableOpacity>
-          ))}
+        <View style={styles.inputContainer}>
+          <Text style={styles.label}>Horário da Consulta:</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="HH:MM"
+            placeholderTextColor="#666"
+            value={horarioConsulta}
+            onChangeText={setHorarioConsulta}
+          />
         </View>
-      )}
 
-      {/* Botão Agendar */}
-      <TouchableOpacity onPress={handleAgendarConsulta} style={styles.button}>
-        <Text style={styles.buttonText}>Agendar Consulta</Text>
+        {/* Seleção de Procedimento */}
+        <Text style={styles.label}>Procedimento:</Text>
+        <TouchableOpacity
+          style={styles.dropdown}
+          onPress={() => setShowProcedimentoOptions(!showProcedimentoOptions)}
+        >
+          <Text style={styles.dropdownText}>
+            {procedimentoSelecionado 
+              ? procedimentos.find(p => p.id === procedimentoSelecionado)?.name
+              : 'Selecione o procedimento'}
+          </Text>
+        </TouchableOpacity>
+        
+        {showProcedimentoOptions && (
+          <View style={styles.optionsList}>
+            {procedimentos.map((procedimento) => (
+              <TouchableOpacity
+                key={procedimento.id}
+                style={styles.optionItem}
+                onPress={() => {
+                  setProcedimentoSelecionado(procedimento.id);
+                  setShowProcedimentoOptions(false);
+                }}
+              >
+                <Text style={styles.optionText}>{procedimento.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        {/* Seleção de Dentista */}
+        <Text style={styles.label}>Dentista:</Text>
+        <TouchableOpacity
+          style={styles.dropdown}
+          onPress={() => setShowDentistaOptions(!showDentistaOptions)}
+        >
+          
+          <Text style={styles.dropdownText}>
+            {dentistaSelecionado 
+              ? dentistas.find(d => d.id === dentistaSelecionado)?.name
+              : 'Selecione o dentista'}
+          </Text>
+        </TouchableOpacity>
+        
+        {showDentistaOptions && (
+          <View style={styles.optionsList}>
+            {dentistas.map((dentista) => (
+              <TouchableOpacity
+                key={dentista.id}
+                style={styles.optionItem}
+                onPress={() => {
+                  setDentistaSelecionado(dentista.id);
+                  setShowDentistaOptions(false);
+                }}
+              >
+                <Text style={styles.optionText}>{dentista.name}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+      </View>
+
+      <TouchableOpacity style={styles.submitButton} onPress={handleAgendarConsulta}>
+        <Text style={styles.submitButtonText}>Agendar Consulta</Text>
       </TouchableOpacity>
+
+     {/* Alert Centralizado */}
+     {showSuccessAlert && (
+      <View style={styles.modalOverlay}>
+        <View style={styles.alertContainer}>
+          <Text style={styles.alertText}>Consulta Agendada com Sucesso! 😊</Text>
+        </View>
+      </View>
+    )}
     </ScrollView>
   );
 };

@@ -1,278 +1,201 @@
 import apiClient from './apiClient';
 
-// Interface para a requisição de login
+// Interfaces atualizadas
 interface LoginRequest {
   email: string;
   password: string;
 }
 
-// Interface para a resposta de login
 interface LoginResponse {
   token: string;
 }
 
-// Interface para a resposta de busca de clínicas
 interface ClinicResponse {
   id: number;
   name: string;
 }
 
-// Interface para a requisição de cadastro de atendente
 interface CadastroAtendenteRequest {
   email: string;
   password: string;
   name: string;
   rg: string;
-  birthDate: string; // Formato: yyyy-MM-dd
-  role: string; // Pré-definido como "ATENDENTE"
+  birthDate: string;
+  role: string;
   clinicId: number;
 }
 
-// Interface para a requisição de cadastro de dentista
 interface CadastroDentistaRequest {
   email: string;
   password: string;
   name: string;
   rg: string;
-  birthDate: string; // Formato: yyyy-MM-dd
+  birthDate: string;
   cro: string;
-  role: string; // Pré-definido como "DENTISTA"
+  role: string;
   clinicId: number;
 }
 
-// Interface para a requisição de cadastro de paciente
 interface PatientRequest {
   name: string;
   rg: string;
-  birthDate: string; // Formato: yyyy-MM-dd
+  birthDate: string;
   numCard: number;
 }
 
-// Interface para a resposta de busca de paciente
-interface PatientResponse {
-  id: number;
-  name: string;
-  rg: string;
-  birthDate: string; // Formato: yyyy-MM-dd
-  numCard: number;
-}
-
-// Interface para a requisição de agendamento
 interface AppointmentRequest {
-  dateAppointment: string; // Formato: dd/MM/yyyy
-  timeAppointment: string; // Formato: HH:mm
+  dateAppointment: string;
+  timeAppointment: string;
   dentistId: number;
   patientId: number;
   procedureTypeId: number;
+  clinicId: number;
+  procedureValidationId?: number;
 }
 
-// Interface para a resposta de listagem de consultas
 interface AppointmentListResponse {
   id: number;
   patient: string;
-  dateAppointment: string; // Formato: dd/MM/yyyy
-  timeAppointment: string; // Formato: HH:mm
+  dateAppointment: string;
+  timeAppointment: string;
   procedureType: string;
   clinic: string;
 }
 
-// Função para realizar login
+// Funções de API atualizadas
 export const realizarLogin = async (email: string, senha: string): Promise<LoginResponse> => {
   try {
     const response = await apiClient.post<LoginResponse>('/auth/login', { email, password: senha });
-    if (response.status === 200 && response.data) {
-      return response.data;
-    } else {
-      throw new Error(`Erro inesperado: ${response.status}`);
-    }
-  } catch (error: any) {
-    if (error.response) {
-      const statusCode = error.response.status;
-      switch (statusCode) {
-        case 400:
-          throw new Error('Dados inválidos');
-        case 401:
-          throw new Error('Email ou senha incorretos');
-        case 403:
-          throw new Error('Acesso não autorizado');
-        case 404:
-          throw new Error('Email ou senha incorretos');
-        case 500:
-          throw new Error('Erro interno do servidor');
-        default:
-          throw new Error(`Erro no login: ${statusCode}`);
-      }
-    } else if (error.request) {
-      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
-    } else {
-      throw new Error(`Erro desconhecido: ${error.message}`);
-    }
-  }
-};
-
-export const buscarConsultaPorID = async (appointmentId: number) => {
-  try {
-    const response = await apiClient.get(`/appointments/${appointmentId}`);
     return response.data;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Erro ao buscar consulta');
+    handleApiError(error, 'login');
+    throw error;
   }
 };
 
+export const excluirConsulta = async (appointmentId: number): Promise<void> => {
+  try {
+    await apiClient.delete(`/appointments/${appointmentId}`);
+  } catch (error: any) {
+    handleApiError(error, 'excluir consulta');
+    throw error;
+  }
+};
 
-
-// // Iniciar consulta
-// export const iniciarConsulta = async (appointmentId: number) => {
-//   try {
-//     const response = await apiClient.post(`/appointments/${appointmentId}/start`);
-//     return response.data;
-//   } catch (error: any) {
-//     throw new Error(error.response?.data?.message || 'Erro ao iniciar consulta');
-//   }
-// };
-
-// Função para buscar clínicas
 export const buscarClinicas = async (): Promise<ClinicResponse[]> => {
   try {
     const response = await apiClient.get<ClinicResponse[]>('/clinics');
-    if (response.status === 200 && response.data) {
-      return response.data;
-    } else {
-      throw new Error(`Erro inesperado: ${response.status}`);
-    }
+    return response.data;
   } catch (error: any) {
-    if (error.response) {
-      const statusCode = error.response.status;
-      switch (statusCode) {
-        case 400:
-          throw new Error('Requisição inválida');
-        case 403:
-          throw new Error('Acesso não autorizado');
-        case 500:
-          throw new Error('Erro interno do servidor');
-        default:
-          throw new Error(`Erro ao buscar clínicas: ${statusCode}`);
-      }
-    } else if (error.request) {
-      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
-    } else {
-      throw new Error(`Erro desconhecido: ${error.message}`);
-    }
+    handleApiError(error, 'buscar clínicas');
+    throw error;
   }
 };
 
-// Função para cadastrar atendentes
 export const cadastrarAtendente = async (dados: CadastroAtendenteRequest): Promise<void> => {
   try {
-    const response = await apiClient.post('/auth/signup', dados);
-    if (response.status !== 201) {
-      throw new Error(`Erro inesperado: ${response.status}`);
-    }
+    await apiClient.post('/auth/signup', dados);
   } catch (error: any) {
-    if (error.response) {
-      const statusCode = error.response.status;
-      switch (statusCode) {
-        case 400:
-          throw new Error('Dados inválidos');
-        case 403:
-          throw new Error('Acesso não autorizado');
-        case 500:
-          throw new Error('Erro interno do servidor');
-        default:
-          throw new Error(`Erro ao cadastrar atendente: ${statusCode}`);
-      }
-    } else if (error.request) {
-      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
-    } else {
-      throw new Error(`Erro desconhecido: ${error.message}`);
-    }
+    handleApiError(error, 'cadastrar atendente');
+    throw error;
   }
 };
 
-// Função para cadastrar dentistas
 export const cadastrarDentista = async (dados: CadastroDentistaRequest): Promise<void> => {
   try {
-    const response = await apiClient.post('/auth/signup', dados);
-    if (response.status !== 201) {
-      throw new Error(`Erro inesperado: ${response.status}`);
-    }
+    await apiClient.post('/auth/signup', dados);
   } catch (error: any) {
-    if (error.response) {
-      const statusCode = error.response.status;
-      switch (statusCode) {
-        case 400:
-          throw new Error('Dados inválidos');
-        case 403:
-          throw new Error('Acesso não autorizado');
-        case 500:
-          throw new Error('Erro interno do servidor');
-        default:
-          throw new Error(`Erro ao cadastrar dentista: ${statusCode}`);
-      }
-    } else if (error.request) {
-      throw new Error('Erro de conexão: Não foi possível conectar ao servidor');
-    } else {
-      throw new Error(`Erro desconhecido: ${error.message}`);
-    }
+    handleApiError(error, 'cadastrar dentista');
+    throw error;
   }
 };
 
-// Função para buscar procedimentos
 export const buscarProcedimentos = async (): Promise<any[]> => {
   try {
     const response = await apiClient.get('/proceduresType');
     return response.data;
   } catch (error: any) {
-    throw new Error(error.message || 'Erro ao buscar procedimentos');
+    handleApiError(error, 'buscar procedimentos');
+    throw error;
   }
 };
 
-// Função para buscar dentistas
 export const buscarDentistas = async (): Promise<any[]> => {
   try {
     const response = await apiClient.get('/auth?role=DENTISTA');
     return response.data;
   } catch (error: any) {
-    throw new Error(error.message || 'Erro ao buscar dentistas');
+    handleApiError(error, 'buscar dentistas');
+    throw error;
   }
 };
 
-// Função para buscar paciente por RG
 export const buscarPacientePorRG = async (rg: string): Promise<any> => {
   try {
     const response = await apiClient.get(`/patients/${rg}`);
     return response.data;
   } catch (error: any) {
-    throw new Error(error.message || 'Paciente não encontrado');
+    handleApiError(error, 'buscar paciente');
+    throw error;
   }
 };
 
-// Função para criar um novo paciente
-export const criarPaciente = async (dados: any): Promise<any> => {
+export const criarPaciente = async (dados: PatientRequest): Promise<any> => {
   try {
     const response = await apiClient.post('/patients', dados);
     return response.data;
   } catch (error: any) {
-    throw new Error(error.message || 'Erro ao criar paciente');
+    handleApiError(error, 'criar paciente');
+    throw error;
   }
 };
 
-// Função para agendar uma consulta
-export const agendarConsulta = async (dados: any): Promise<any> => {
+export const agendarConsulta = async (dados: AppointmentRequest): Promise<any> => {
   try {
     const response = await apiClient.post('/appointments', dados);
     return response.data;
   } catch (error: any) {
-    throw new Error(error.message || 'Erro ao agendar consulta');
+    handleApiError(error, 'agendar consulta');
+    throw error;
   }
 };
 
-// Função para buscar consultas
 export const fetchAppointments = async (): Promise<AppointmentListResponse[]> => {
   try {
     const response = await apiClient.get('/appointments');
     return response.data;
   } catch (error: any) {
-    throw new Error(error.message || 'Erro ao buscar consultas');
+    handleApiError(error, 'buscar consultas');
+    throw error;
+  }
+};
+
+// Função auxiliar para tratamento de erros
+const handleApiError = (error: any, context: string) => {
+  let errorMessage = `Erro ao ${context}`;
+  
+  if (error.response) {
+    const { status, data } = error.response;
+    errorMessage += `: ${status} - ${data.message || 'Erro desconhecido'}`;
+    console.error(`Erro ${status}`, data);
+  } else if (error.request) {
+    errorMessage += ': Sem resposta do servidor';
+    console.error('Sem resposta:', error.request);
+  } else {
+    errorMessage += `: ${error.message}`;
+    console.error('Erro de configuração:', error.message);
+  }
+  
+  throw new Error(errorMessage);
+};
+
+// Funções adicionais
+export const buscarConsultaPorID = async (appointmentId: number) => {
+  try {
+    const response = await apiClient.get(`/appointments/${appointmentId}`);
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error, 'buscar consulta por ID');
+    throw error;
   }
 };

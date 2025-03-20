@@ -1,8 +1,14 @@
-// screens/ConsultaPaciente/ConsultaPaciente.tsx
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
+import { 
+  View, 
+  Text, 
+  TouchableOpacity, 
+  ActivityIndicator, 
+  Alert,
+  Image
+} from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { buscarConsultaPorID } from '../../api/endpoints';
+import { buscarConsultaPorID, excluirConsulta } from '../../api/endpoints';
 import styles from './ConsultaPaciente.styles';
 import { ConsultaPacienteNavigationProp, ConsultaPacienteRouteProp } from '../../src/navigation/navigationTypes';
 
@@ -18,6 +24,8 @@ const ConsultaPaciente: React.FC = () => {
   const route = useRoute<ConsultaPacienteRouteProp>();
   const [isLoading, setIsLoading] = useState(false);
   const [consulta, setConsulta] = useState<ConsultaData | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const { appointmentId, tipoUsuario } = route.params;
 
@@ -48,52 +56,128 @@ const ConsultaPaciente: React.FC = () => {
 
   const handleIniciarAnalise = () => {
     navigation.navigate('AnaliseConsulta', {
-      appointmentId:appointmentId,
+      appointmentId: appointmentId,
       tipoUsuario: tipoUsuario
     });
+  };
+
+  const handleExcluirConsulta = async () => {
+    try {
+      setIsLoading(true);
+      await excluirConsulta(appointmentId);
+      setShowSuccess(true);
+      setTimeout(() => {
+        navigation.navigate('Consultas');
+      }, 1500);
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Falha ao excluir consulta');
+    } finally {
+      setIsLoading(false);
+      setShowDeleteModal(false);
+    }
   };
 
   return (
     <View style={styles.container}>
       {isLoading && (
         <View style={styles.progressBar}>
-          <ActivityIndicator size="large" color="#FFF" />
+          <ActivityIndicator size="large" color="#0066FF" />
         </View>
       )}
 
-      <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.backButtonText}>Voltar</Text>
+      {/* Modal de Confirmação de Exclusão */}
+      {showDeleteModal && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Deseja excluir a consulta? 😟</Text>
+            
+            <View style={styles.modalButtonGroup}>
+              <TouchableOpacity 
+                style={styles.modalButton}
+                onPress={() => setShowDeleteModal(false)}
+              >
+                <Text style={styles.modalButtonText}>Não</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.modalButton}
+                onPress={handleExcluirConsulta}
+              >
+                <Text style={styles.modalButtonText}>Excluir</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* Modal de Sucesso */}
+      {showSuccess && (
+        <View style={styles.modalOverlay}>
+          <View style={styles.successContainer}>
+            <Text style={styles.successText}>Consulta excluída com sucesso! ✅</Text>
+          </View>
+        </View>
+      )}
+
+      <TouchableOpacity 
+        onPress={() => navigation.goBack()} 
+        style={styles.backButton}
+      >
+        <Image
+          source={require('../../assets/vol.png')}
+          style={styles.backIcon}
+        />
       </TouchableOpacity>
 
-      <Text style={styles.title}>Detalhes da Consulta</Text>
+      <Text style={styles.title}>Consulta Paciente</Text>
 
       {consulta ? (
-        <>
+        <View style={styles.content}>
           <View style={styles.infoContainer}>
-            <Text style={styles.label}>Paciente:</Text>
-            <Text style={styles.value}>{consulta.patientName}</Text>
+            <View style={styles.infoItem}>
+              <Text style={styles.label}>Nome:</Text>
+              <Text style={styles.value}>{consulta.patientName}</Text>
+            </View>
 
-            <Text style={styles.label}>Data:</Text>
-            <Text style={styles.value}>{consulta.appointmentDate}</Text>
+            <View style={styles.infoItem}>
+              <Text style={styles.label}>Data:</Text>
+              <Text style={styles.value}>{consulta.appointmentDate}</Text>
+            </View>
 
-            <Text style={styles.label}>Horário:</Text>
-            <Text style={styles.value}>{consulta.appointmentTime}</Text>
+            <View style={styles.infoItem}>
+              <Text style={styles.label}>Horário:</Text>
+              <Text style={styles.value}>{consulta.appointmentTime}</Text>
+            </View>
 
-            <Text style={styles.label}>Procedimento:</Text>
-            <Text style={styles.value}>{consulta.procedureType}</Text>
+            <View style={styles.infoItem}>
+              <Text style={styles.label}>Motivo da Consulta:</Text>
+              <Text style={styles.value}>{consulta.procedureType}</Text>
+            </View>
           </View>
 
-          {tipoUsuario === 'dentista' && (
+          {tipoUsuario === 'dentista' ? (
             <TouchableOpacity 
               onPress={handleIniciarAnalise}
-              style={styles.actionButton}
+              style={styles.primaryButton}
             >
-              <Text style={styles.buttonText}>Iniciar Análise</Text>
+              <Text style={styles.buttonText}>Iniciar</Text>
             </TouchableOpacity>
+          ) : (
+            <View style={styles.buttonGroup}>
+              <TouchableOpacity 
+                style={styles.secondaryButton}
+                onPress={() => setShowDeleteModal(true)}
+              >
+                <Text style={styles.buttonText}>Excluir</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.secondaryButton}>
+                <Text style={styles.buttonText}>Alterar</Text>
+              </TouchableOpacity>
+            </View>
           )}
-        </>
+        </View>
       ) : (
-        <Text style={styles.loadingText}>Carregando...</Text>
+        <Text style={styles.loadingText}>Carregando dados da consulta...</Text>
       )}
     </View>
   );
