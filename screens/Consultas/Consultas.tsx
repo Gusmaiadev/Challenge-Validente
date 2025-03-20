@@ -90,56 +90,55 @@ const Consultas: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* ProgressBar */}
-      {isLoading && (
-        <View style={styles.progressBar}>
-          <ActivityIndicator size="large" color="#FFFFFF" />
-        </View>
-      )}
-
-      {/* Botão Voltar */}
-      <TouchableOpacity onPress={handleVoltar} style={styles.backButton}>
-        <Image
-          source={require('../../assets/vol.png')} // Substitua pelo caminho correto do ícone
-          style={styles.backIcon}
-        />
-      </TouchableOpacity>
-
-      {/* Título */}
-      <Text style={styles.title}>Consultas</Text>
-
-      {/* Botão Adicionar Consulta (Visível apenas para atendentes) */}
-      {tipoUsuario === 'atendente' && (
-        <TouchableOpacity onPress={handleAddConsulta} style={styles.addButton}>
-          <Image
-            source={require('../../assets/mais.png')} // Substitua pelo caminho correto do ícone
-            style={styles.addIcon}
-          />
+      {/* Header com botões */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleVoltar}>
+          <Image source={require('../../assets/vol.png')} style={styles.backIcon} />
         </TouchableOpacity>
-      )}
+
+        <Text style={styles.title}>Consultas</Text>
+
+        {tipoUsuario === 'atendente' && (
+          <TouchableOpacity onPress={handleAddConsulta}>
+            <Image source={require('../../assets/mais.png')} style={styles.addIcon} />
+          </TouchableOpacity>
+        )}
+      </View>
+
+      <Text style={styles.subtitle}>Consultas agendadas:</Text>
 
       {/* Lista de Consultas */}
       {appointments.length > 0 ? (
         <FlatList
           data={appointments}
           keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={styles.listContent}
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.appointmentItem}
               onPress={() => navigateToAppointmentDetails(item)}
             >
               <Text style={styles.appointmentText}>Nome: {item.patient}</Text>
-              <Text style={styles.appointmentText}>
-                Dia: {formatDateToBR(item.dateAppointment)}
-              </Text>
+              <Text style={styles.appointmentText}>Data: {formatDateToBR(item.dateAppointment)}</Text>
               <Text style={styles.appointmentText}>Horário: {item.timeAppointment}</Text>
+              <TouchableOpacity 
+                style={styles.verButton}
+                onPress={() => navigateToAppointmentDetails(item)}
+              >
+                <Text style={styles.verButtonText}>VER</Text>
+              </TouchableOpacity>
             </TouchableOpacity>
           )}
         />
       ) : (
-        !isLoading && (
-          <Text style={styles.emptyListText}>Nenhuma consulta encontrada</Text>
-        )
+        !isLoading && <Text style={styles.emptyListText}>Nenhuma consulta encontrada</Text>
+      )}
+
+      {/* Loading */}
+      {isLoading && (
+        <View style={styles.progressBar}>
+          <ActivityIndicator size="large" color="#0066FF" />
+        </View>
       )}
     </View>
   );
