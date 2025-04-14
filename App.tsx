@@ -57,7 +57,7 @@ const App: React.FC = () => {
           component={MenuLogin}
           options={{ headerShown: false }}
         />
-        <Stack.Screen
+        <Stack.Screen 
           name="LoginDentista"
           component={LoginDentista}
           options={{ headerShown: false }}

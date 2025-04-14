@@ -6,12 +6,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     padding: 20,
   },
-  logo: {
-    width: 60,
-    height: 60,
+  logoContainer: {
     alignSelf: 'flex-end',
     marginTop: 90,
     marginRight: 20,
+  },
+  logo: {
+    width: 60,
+    height: 60,
     resizeMode: 'contain',
   },
   instructionText: {
@@ -20,7 +22,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     marginTop: 120,
     marginLeft: 20,
-    marginBottom:-60,
+    marginBottom: -60,
   },
   gridContainer: {
     flex: 1,
@@ -52,7 +54,22 @@ const styles = StyleSheet.create({
     color: '#000000',
     textAlign: 'center',
   },
+  logoutButton: {
+    position: 'absolute',
+    top: 180,
+    right: 45,
+    backgroundColor: '#FF3B30',
+    borderRadius: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    zIndex: 1,
+  },
+  logoutText: {
+    fontFamily: 'Montserrat-Bold',
+    fontSize: 14,
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
 });
-
 
 export default styles;

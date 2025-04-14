@@ -1,4 +1,4 @@
-// LoginDentista.styles.ts
+// LoginAtendente.styles.ts
 import { StyleSheet } from 'react-native';
 
 const styles = StyleSheet.create({
@@ -41,15 +41,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    height: 50,
+    minHeight: 50,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#0066FF',
     borderRadius: 10,
-    padding: 15,
+    paddingHorizontal: 15,
     marginBottom: 20,
     fontFamily: 'Montserrat-Regular',
     fontSize: 16,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
   },
   passwordInput: {
     position: 'relative',

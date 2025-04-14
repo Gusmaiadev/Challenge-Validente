@@ -41,15 +41,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   input: {
-    height: 50,
+    minHeight: 50, // Alterado de height para minHeight
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#0066FF',
     borderRadius: 10,
-    padding: 15,
+    paddingHorizontal: 15, // Alterado de padding para paddingHorizontal
     marginBottom: 20,
     fontFamily: 'Montserrat-Regular',
     fontSize: 16,
+    includeFontPadding: false, // Adicionado
+    textAlignVertical: 'center', // Adicionado
   },
   passwordInput: {
     position: 'relative',

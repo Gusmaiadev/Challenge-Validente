@@ -15,6 +15,7 @@ const MenuPrincipal: React.FC = () => {
   const navigation = useNavigation();
   const [tipoUsuario, setTipoUsuario] = useState<string>('desconhecido');
   const [iconSource, setIconSource] = useState(require('../../assets/icone.png'));
+  const [showLogout, setShowLogout] = useState(false);
 
   useEffect(() => {
     const fetchTipoUsuario = async () => {
@@ -48,45 +49,69 @@ const MenuPrincipal: React.FC = () => {
     Linking.openURL('https://www.odontoprev.com.br/fale-conosco');
   };
 
+  const handleLogout = async () => {
+    try {
+      await AsyncStorage.clear();
+      navigation.navigate('MenuLogin' as never);
+    } catch (error) {
+      console.error('Erro ao fazer logout:', error);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      {/* Logo alinhada à direita */}
-      <Image source={iconSource} style={styles.logo} />
+      {/* Ícone do usuário com botão */}
+      <TouchableOpacity 
+        onPress={() => setShowLogout(!showLogout)}
+        style={styles.logoContainer}
+      >
+        <Image source={iconSource} style={styles.logo} />
+      </TouchableOpacity>
 
-      {/* Texto de instrução */}
+      {/* Botão de logout */}
+      {showLogout && (
+        <TouchableOpacity
+          style={styles.logoutButton}
+          onPress={handleLogout}
+        >
+          <Text style={styles.logoutText}>SAIR</Text>
+        </TouchableOpacity>
+      )}
+
       <Text style={styles.instructionText}>Olá, escolha uma das opções abaixo:</Text>
 
-      {/* Grid de botões */}
       <View style={styles.gridContainer}>
-        {/* Primeira linha */}
         <View style={styles.row}>
           <TouchableOpacity 
             style={styles.menuButton}
-            onPress={() => navigation.navigate('Consultas' as never)}>
+            onPress={() => navigation.navigate('Consultas' as never)}
+          >
             <Image source={require('../../assets/consultas.png')} style={styles.buttonIcon}/>
             <Text style={styles.buttonLabel}>Consultas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuButton}
-            onPress={() => navigation.navigate('Configuracoes' as never)}>
+            onPress={() => navigation.navigate('Configuracoes' as never)}
+          >
             <Image source={require('../../assets/configuracoes.png')} style={styles.buttonIcon}/>
             <Text style={styles.buttonLabel}>Configurações</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Segunda linha */}
         <View style={styles.row}>
           <TouchableOpacity 
             style={styles.menuButton}
-            onPress={() => navigation.navigate('ComoUsar' as never)}>
+            onPress={() => navigation.navigate('ComoUsar' as never)}
+          >
             <Image source={require('../../assets/interrogacao.png')} style={styles.buttonIcon}/>
             <Text style={styles.buttonLabel}>Como usar o App</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuButton}
-            onPress={handleSuportePress}>
+            onPress={handleSuportePress}
+          >
             <Image source={require('../../assets/chat.png')} style={styles.buttonIcon}/>
             <Text style={styles.buttonLabel}>Fale com a Odontoprev</Text>
           </TouchableOpacity>
