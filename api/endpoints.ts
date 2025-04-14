@@ -208,4 +208,5 @@ export const buscarConsultaPorID = async (appointmentId: number) => {
     handleApiError(error, 'buscar consulta por ID');
     throw error;
   }
+  
 };

@@ -149,7 +149,6 @@ const CadastroDentista: React.FC = () => {
         placeholderTextColor="#343232"
         value={rg}
         onChangeText={setRg}
-        keyboardType="numeric"
       />
 
       <Text style={styles.label}>Data de Nascimento:</Text>
@@ -159,7 +158,6 @@ const CadastroDentista: React.FC = () => {
         placeholderTextColor="#343232"
         value={dataNascimento}
         onChangeText={setDataNascimento}
-        keyboardType="numeric"
       />
 
       <Text style={styles.label}>CRO:</Text>
