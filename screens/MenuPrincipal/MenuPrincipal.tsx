@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   Image,
   Linking,
-  StyleSheet,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
@@ -60,7 +59,6 @@ const MenuPrincipal: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      {/* Ícone do usuário com botão */}
       <TouchableOpacity 
         onPress={() => setShowLogout(!showLogout)}
         style={styles.logoContainer}
@@ -68,7 +66,6 @@ const MenuPrincipal: React.FC = () => {
         <Image source={iconSource} style={styles.logo} />
       </TouchableOpacity>
 
-      {/* Botão de logout */}
       {showLogout && (
         <TouchableOpacity
           style={styles.logoutButton}
@@ -86,33 +83,34 @@ const MenuPrincipal: React.FC = () => {
             style={styles.menuButton}
             onPress={() => navigation.navigate('Consultas' as never)}
           >
-            <Image source={require('../../assets/consultas.png')} style={styles.buttonIcon}/>
+            <Image 
+              source={require('../../assets/consultas.png')} 
+              style={styles.buttonIcon}
+            />
             <Text style={styles.buttonLabel}>Consultas</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.menuButton}
-            onPress={() => navigation.navigate('Configuracoes' as never)}
+            onPress={() => navigation.navigate('ComoUsar' as never)}
           >
-            <Image source={require('../../assets/configuracoes.png')} style={styles.buttonIcon}/>
-            <Text style={styles.buttonLabel}>Configurações</Text>
+            <Image 
+              source={require('../../assets/interrogacao.png')} 
+              style={styles.buttonIcon}
+            />
+            <Text style={styles.buttonLabel}>Como usar o App</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.row}>
+        <View style={styles.fullWidthContainer}>
           <TouchableOpacity 
-            style={styles.menuButton}
-            onPress={() => navigation.navigate('ComoUsar' as never)}
-          >
-            <Image source={require('../../assets/interrogacao.png')} style={styles.buttonIcon}/>
-            <Text style={styles.buttonLabel}>Como usar o App</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity 
-            style={styles.menuButton}
+            style={styles.fullWidthButton}
             onPress={handleSuportePress}
           >
-            <Image source={require('../../assets/chat.png')} style={styles.buttonIcon}/>
+            <Image 
+              source={require('../../assets/chat.png')} 
+              style={styles.buttonIcon}
+            />
             <Text style={styles.buttonLabel}>Fale com a Odontoprev</Text>
           </TouchableOpacity>
         </View>

@@ -52,18 +52,28 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     width: '80%',
-    height: 50,
+    height: 55, // Aumente a altura
     backgroundColor: '#FFFFFF',
     borderRadius: 10,
     borderWidth: 1,
     borderColor: '#0066FF',
     marginBottom: 20,
     justifyContent: 'center',
+    overflow: 'hidden', // Adicione para conter o Picker
   },
   picker: {
     width: '100%',
     height: '100%',
     fontFamily: 'Montserrat_400Regular',
+    paddingVertical: -10, // Ajuste o padding
+  },
+  pickerItem: {
+    fontSize: 16,
+    height: 50, // Altura do item
+  },
+  placeholderItem: {
+    fontSize: 16,
+    color: '#343232', // Cor igual aos placeholders
   },
   passwordContainer: {
     width: '80%',

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,21 +8,19 @@ import {
   ActivityIndicator,
   ToastAndroid,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { fetchAppointments } from '../../api/endpoints';
 import styles from './Consultas.styles';
-import { ConsultasRouteProp, ConsultasNavigationProp } from '../../src/navigation/navigationTypes';
+import { ConsultasNavigationProp } from '../../src/navigation/navigationTypes';
 
-
-// Função para formatar a data no padrão brasileiro (DD/MM/YYYY)
 const formatDateToBR = (isoDate: string): string => {
-  const dateParts = isoDate.split('-'); // Divide a data em partes [YYYY, MM, DD]
+  const dateParts = isoDate.split('-');
   if (dateParts.length === 3) {
     const [year, month, day] = dateParts;
-    return `${day}/${month}/${year}`; // Retorna no formato DD/MM/YYYY
+    return `${day}/${month}/${year}`;
   }
-  return isoDate; // Retorna a data original caso não seja possível formatar
+  return isoDate;
 };
 
 const Consultas: React.FC = () => {
@@ -31,42 +29,38 @@ const Consultas: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [tipoUsuario, setTipoUsuario] = useState<string>('');
 
-  // Carregar tipo de usuário ao iniciar
-  useEffect(() => {
-    const loadTipoUsuario = async () => {
-      const storedTipoUsuario = await AsyncStorage.getItem('tipoUsuario');
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const [storedTipoUsuario, response] = await Promise.all([
+        AsyncStorage.getItem('tipoUsuario'),
+        fetchAppointments()
+      ]);
+      
       setTipoUsuario(storedTipoUsuario || '');
-    };
-    loadTipoUsuario();
+      setAppointments(response);
+    } catch (error: any) {
+      handleError(error);
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  // Carregar consultas da API
-  useEffect(() => {
-    const loadAppointments = async () => {
-      setIsLoading(true);
-      try {
-        const response = await fetchAppointments();
-        setAppointments(response);
-      } catch (error: any) {
-        handleError(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadAppointments();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadData();
+      return () => {};
+    }, [loadData])
+  );
 
-  // Função para navegar de volta ao MenuPrincipal
   const handleVoltar = () => {
     navigation.navigate('MenuPrincipal', { tipoUsuario });
   };
 
-  // Função para navegar para AgendamentoConsulta
   const handleAddConsulta = () => {
     navigation.navigate('AgendamentoConsultas' as never);
   };
 
-  // Função para navegar para detalhes da consulta
   const navigateToAppointmentDetails = (appointment: any) => {
     navigation.navigate('ConsultaPaciente', {
       appointmentId: appointment.id,
@@ -79,18 +73,13 @@ const Consultas: React.FC = () => {
     });
   };
 
-  // Função para lidar com erros
   const handleError = (error: any) => {
-    let errorMessage = 'Erro desconhecido';
-    if (error.message) {
-      errorMessage = error.message;
-    }
+    const errorMessage = error.message || 'Erro desconhecido';
     ToastAndroid.show(errorMessage, ToastAndroid.LONG);
   };
 
   return (
     <View style={styles.container}>
-      {/* Header com botões */}
       <View style={styles.header}>
         <TouchableOpacity onPress={handleVoltar}>
           <Image source={require('../../assets/vol.png')} style={styles.backIcon} />
@@ -107,7 +96,6 @@ const Consultas: React.FC = () => {
 
       <Text style={styles.subtitle}>Consultas agendadas:</Text>
 
-      {/* Lista de Consultas */}
       {appointments.length > 0 ? (
         <FlatList
           data={appointments}
@@ -134,7 +122,6 @@ const Consultas: React.FC = () => {
         !isLoading && <Text style={styles.emptyListText}>Nenhuma consulta encontrada</Text>
       )}
 
-      {/* Loading */}
       {isLoading && (
         <View style={styles.progressBar}>
           <ActivityIndicator size="large" color="#0066FF" />

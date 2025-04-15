@@ -187,16 +187,14 @@ const handleApiError = (error: any, context: string) => {
   if (error.response) {
     const { status, data } = error.response;
     errorMessage += `: ${status} - ${data.message || 'Erro desconhecido'}`;
-    console.error(`Erro ${status}`, data);
   } else if (error.request) {
     errorMessage += ': Sem resposta do servidor';
-    console.error('Sem resposta:', error.request);
   } else {
     errorMessage += `: ${error.message}`;
-    console.error('Erro de configuração:', error.message);
   }
   
-  throw new Error(errorMessage);
+  // Remove o console.error original e não lança nova exceção
+  return errorMessage; // Retorna apenas a mensagem
 };
 
 // Funções adicionais

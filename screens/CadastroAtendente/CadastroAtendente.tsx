@@ -182,15 +182,21 @@ const CadastroAtendente: React.FC = () => {
 
       <Text style={styles.label}>Unidade:</Text>
       <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={selectedClinic}
-          onValueChange={(itemValue) => setSelectedClinic(itemValue)}
-          style={styles.picker}>
-          <Picker.Item label="Escolha sua Unidade" value={null} />
-          {clinics.map((clinic) => (
-            <Picker.Item key={clinic.id} label={clinic.name} value={clinic.id} />
-          ))}
-        </Picker>
+      <Picker
+        selectedValue={selectedClinic}
+        onValueChange={(itemValue) => setSelectedClinic(itemValue)}
+        style={styles.picker}
+        itemStyle={styles.pickerItem} // Novo estilo
+      >
+        <Picker.Item 
+          label="Escolha sua Unidade" 
+          value={null} 
+          style={styles.placeholderItem} // Estilo específico para placeholder
+        />
+        {clinics.map((clinic) => (
+          <Picker.Item key={clinic.id} label={clinic.name} value={clinic.id} />
+        ))}
+      </Picker>
       </View>
 
       <TouchableOpacity style={styles.registerButton} onPress={handleCadastro}>

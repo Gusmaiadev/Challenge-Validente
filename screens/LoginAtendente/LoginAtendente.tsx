@@ -32,9 +32,19 @@ const LoginAtendente: React.FC = () => {
     try {
       const response = await realizarLogin(email, senha);
       const { token } = response;
-
+  
       await saveUserData(token);
       navigation.navigate('MenuPrincipal', { tipoUsuario: 'atendente' });
+    } catch (error: any) { // Adicione este bloco catch
+      let customMessage = 'E-mail ou senha incorretos 😟';
+      if (error?.response?.status === 422) {
+        customMessage = 'E-mail ou senha incorretos 😟';
+      } else if (error?.response?.data?.message) {
+        customMessage = error.response.data.message;
+      }
+  
+      setErrorMessage(customMessage);
+      setShowErrorModal(true);
     } finally {
       setIsLoading(false);
     }
