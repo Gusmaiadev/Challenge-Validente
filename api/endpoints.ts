@@ -180,6 +180,16 @@ export const fetchAppointments = async (): Promise<AppointmentListResponse[]> =>
   }
 };
 
+export const fetchAppointmentsByOdontoPrevId = async (patientId: string): Promise<AppointmentListResponse[]> => {
+  try {
+    const response = await apiClient.get(`/appointments/byPatientIdOdontoPrev/${patientId}`);
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error, 'buscar consultas por ID Odontoprev');
+    throw error;
+  }
+};
+
 // Função auxiliar para tratamento de erros
 const handleApiError = (error: any, context: string) => {
   let errorMessage = `Erro ao ${context}`;

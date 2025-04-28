@@ -204,11 +204,11 @@ const AgendamentoConsultas: React.FC = () => {
 
       {/* Seção de Busca por RG */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>RG do Paciente:</Text>
+        <Text style={styles.sectionTitle}>ID do Paciente:</Text>
         <View style={styles.searchContainer}>
           <TextInput
             style={[styles.input, styles.searchInput]}
-            placeholder="RG do paciente"
+            placeholder="ID do paciente"
             placeholderTextColor="#666"
             keyboardType="numeric"
             value={rgPaciente}

@@ -17,14 +17,14 @@ const styles = StyleSheet.create({
     width: 30,
     height: 30,
     resizeMode: 'contain',
-    marginTop:40,
+    marginTop: 40,
   },
   addIcon: {
     width: 50,
     height: 50,
     resizeMode: 'contain',
     tintColor: '#0066FF',
-    marginTop:40,
+    marginTop: 40,
   },
   title: {
     fontFamily: 'Montserrat-Bold',
@@ -35,7 +35,42 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     top: 90,
-  
+  },
+  section: {
+    marginBottom: 16,
+    marginHorizontal: 8,
+    marginTop: 20,
+  },
+  sectionTitle: {
+    fontFamily: 'Montserrat-SemiBold',
+    fontSize: 16,
+    color: '#000000',
+    marginBottom: 8,
+  },
+  searchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  input: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#0066FF',
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 14,
+    fontFamily: 'Montserrat-Regular',
+  },
+  searchButton: {
+    padding: 12,
+    backgroundColor: '#0066FF',
+    borderRadius: 10,
+  },
+  searchIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#FFFFFF',
   },
   subtitle: {
     fontFamily: 'Montserrat-SemiBold',
@@ -43,7 +78,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     marginBottom: 16,
     marginLeft: 8,
-    marginTop:80,
+    marginTop: 20,
   },
   appointmentItem: {
     backgroundColor: '#0066FF',
@@ -67,7 +102,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Montserrat-Bold',
     fontSize: 16,
     color: '#FFFFFF',
-    marginTop:16,
+    marginTop: 16,
   },
   emptyListText: {
     fontFamily: 'Montserrat-Regular',
@@ -88,3 +123,4 @@ const styles = StyleSheet.create({
 });
 
 export default styles;
+

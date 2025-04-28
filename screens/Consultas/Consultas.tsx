@@ -7,10 +7,11 @@ import {
   FlatList,
   ActivityIndicator,
   ToastAndroid,
+  TextInput,
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchAppointments } from '../../api/endpoints';
+import { fetchAppointments, fetchAppointmentsByOdontoPrevId } from '../../api/endpoints';
 import styles from './Consultas.styles';
 import { ConsultasNavigationProp } from '../../src/navigation/navigationTypes';
 
@@ -28,29 +29,40 @@ const Consultas: React.FC = () => {
   const [appointments, setAppointments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [tipoUsuario, setTipoUsuario] = useState<string>('');
+  const [searchId, setSearchId] = useState('');
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
     try {
       const [storedTipoUsuario, response] = await Promise.all([
         AsyncStorage.getItem('tipoUsuario'),
-        fetchAppointments()
+        searchId 
+          ? fetchAppointmentsByOdontoPrevId(searchId)
+          : fetchAppointments()
       ]);
       
       setTipoUsuario(storedTipoUsuario || '');
       setAppointments(response);
     } catch (error: any) {
       handleError(error);
+      setAppointments([]);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [searchId]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadData();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchId, loadData]);
 
   useFocusEffect(
     useCallback(() => {
-      loadData();
+      if (!searchId) loadData();
       return () => {};
-    }, [loadData])
+    }, [loadData, searchId])
   );
 
   const handleVoltar = () => {
@@ -92,6 +104,30 @@ const Consultas: React.FC = () => {
             <Image source={require('../../assets/mais.png')} style={styles.addIcon} />
           </TouchableOpacity>
         )}
+      </View>
+
+      {/* Seção de Busca por ID Odontoprev */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>ID Odontoprev:</Text>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite o ID Odontoprev"
+            placeholderTextColor="#666"
+            keyboardType="numeric"
+            value={searchId}
+            onChangeText={setSearchId}
+          />
+          <TouchableOpacity 
+            style={styles.searchButton} 
+            onPress={loadData}
+          >
+            <Image 
+              source={require('../../assets/search.png')} 
+              style={styles.searchIcon} 
+            />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <Text style={styles.subtitle}>Consultas agendadas:</Text>
