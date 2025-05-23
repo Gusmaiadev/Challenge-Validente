@@ -85,22 +85,43 @@ O aplicativo consome os serviços REST da API **ChallengeOdontoPrev**, cujos pri
 - `GET /auth?role=DENTISTA`: Lista todos os dentistas cadastrados
 
 ## 📲 Como Executar o Projeto
-1. **Clone o repositório**
+
+### **Pré-requisitos**
+- Node.js instalado
+- Java JDK 11+ instalado
+- IDE para Java (IntelliJ IDEA, Eclipse, etc.)
+- Expo CLI instalado globalmente: `npm install -g @expo/cli`
+
+### **1. Configuração da API (Backend)**
+1. **Clone o repositório da API Java**
    ```bash
-   https://github.com/Gusmaiadev/Challenge-Validente
+   git clone https://github.com/ChallengeOdontoPrev/javaAdvanced.git
+   ```
+2. **Navegue para o diretório do projeto**
+   ```bash
+   cd javaAdvanced/challenge
+   ```
+3. **Execute a aplicação Java**
+   - Abra o projeto em sua IDE preferida
+   - Execute o arquivo `ChallengeApplication.java`
+   - A API estará disponível em `http://localhost:8080`
+
+### **2. Configuração do App Mobile (Frontend)**
+1. **Clone o repositório do aplicativo**
+   ```bash
+   git clone https://github.com/Gusmaiadev/Challenge-Validente
    ```
 2. **Instale as dependências**
    ```bash
    cd validente
    npm install
    ```
-3. **Inicie o app**
+3. **Ajuste a configuração da API (se necessário)**
+   - Se a API estiver rodando em um endereço diferente, ajuste a variável `BASE_URL` no arquivo `api/apiClient.ts`
+4. **Inicie o app**
    ```bash
    npx expo start
    ```
-4. **Configuração da API**
-   - Certifique-se de que a API Java está rodando localmente ou em um servidor acessível.
-   - Se necessário, ajuste a variável `BASE_URL` no arquivo `api/apiClient.ts`.
 
 ## 📌 Funcionalidades Principais
 ✅ Login e autenticação de usuários (atendentes e dentistas)  
