@@ -62,6 +62,60 @@ interface AppointmentListResponse {
   clinic: string;
 }
 
+// Nova função para validar a consulta com fotos
+export const validarConsulta = async (
+  appointmentId: number,
+  fotoInicial: string,
+  fotoFinal: string
+) => {
+  try {
+    // Criar FormData para enviar arquivos
+    const formData = new FormData();
+    
+    // Adicionar o arquivo de foto inicial
+    formData.append('fileStart', {
+      uri: fotoInicial,
+      name: fotoInicial.split('/').pop() || 'fotoInicial.jpg',
+      type: 'image/jpeg'
+    } as any);
+    
+    // Adicionar o arquivo de foto final
+    formData.append('fileEnd', {
+      uri: fotoFinal,
+      name: fotoFinal.split('/').pop() || 'fotoFinal.jpg',
+      type: 'image/jpeg'
+    } as any);
+    
+    // Enviar requisição POST com os arquivos
+    const response = await apiClient.post(
+      `/appointments/${appointmentId}/validate`,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    
+    return response.data;
+  } catch (error: any) {
+    throw new Error(
+      error.response?.data?.message || 'Erro ao validar consulta'
+    );
+  }
+};
+
+// Nova função para buscar consultas com status específico
+export const fetchAppointmentsByStatus = async (status: string): Promise<AppointmentListResponse[]> => {
+  try {
+    const response = await apiClient.get(`/appointments/status?status=${status}`);
+    return response.data;
+  } catch (error: any) {
+    handleApiError(error, `buscar consultas com status ${status}`);
+    throw error;
+  }
+};
+
 // Funções de API atualizadas
 export const realizarLogin = async (email: string, senha: string): Promise<LoginResponse> => {
   try {
@@ -216,5 +270,4 @@ export const buscarConsultaPorID = async (appointmentId: number) => {
     handleApiError(error, 'buscar consulta por ID');
     throw error;
   }
-  
 };

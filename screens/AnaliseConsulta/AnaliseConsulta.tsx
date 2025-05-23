@@ -13,7 +13,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { AnaliseConsultaNavigationProp, AnaliseConsultaRouteProp } from '../../src/navigation/navigationTypes';
-import { buscarConsultaPorID } from '../../api/endpoints';
+import { buscarConsultaPorID, validarConsulta } from '../../api/endpoints';
 import styles from './AnaliseConsulta.styles';
 
 type ConsultaData = {
@@ -123,12 +123,22 @@ const AnaliseConsulta: React.FC = () => {
     }
   };
 
-  const handleFinalizar = () => {
+  const handleFinalizar = async () => {
     if (!fotoInicialUri || !fotoFinalUri) {
       Alert.alert('Atenção', 'É necessário enviar ambas as fotos');
       return;
     }
-    setShowSuccessModal(true);
+    
+    setIsLoading(true);
+    try {
+      // Chamar a API para validar a consulta
+      await validarConsulta(appointmentId, fotoInicialUri, fotoFinalUri);
+      setShowSuccessModal(true);
+    } catch (error: any) {
+      Alert.alert('Erro', error.message || 'Falha ao finalizar a consulta');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCloseSuccessModal = () => {

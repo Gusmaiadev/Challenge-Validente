@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { fetchAppointments, fetchAppointmentsByOdontoPrevId } from '../../api/endpoints';
+import { fetchAppointmentsByStatus, fetchAppointmentsByOdontoPrevId } from '../../api/endpoints';
 import styles from './Consultas.styles';
 import { ConsultasNavigationProp } from '../../src/navigation/navigationTypes';
 
@@ -38,7 +38,7 @@ const Consultas: React.FC = () => {
         AsyncStorage.getItem('tipoUsuario'),
         searchId 
           ? fetchAppointmentsByOdontoPrevId(searchId)
-          : fetchAppointments()
+          : fetchAppointmentsByStatus('SCHEDULED') // Alterado para usar o novo endpoint com status SCHEDULED
       ]);
       
       setTipoUsuario(storedTipoUsuario || '');
