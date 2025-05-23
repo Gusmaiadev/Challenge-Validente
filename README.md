@@ -87,7 +87,7 @@ O aplicativo consome os serviços REST da API **ChallengeOdontoPrev**, cujos pri
 ## 📲 Como Executar o Projeto
 1. **Clone o repositório**
    ```bash
-   git clone https://github.com/seu-repo/validente.git
+   https://github.com/Gusmaiadev/Challenge-Validente
    ```
 2. **Instale as dependências**
    ```bash
